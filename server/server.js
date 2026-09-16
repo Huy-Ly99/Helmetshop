@@ -96,7 +96,7 @@ app.get("/api/products", async (req, res) => {
     try {
 
         const result = await pool.query(
-            "SELECT * FROM products ORDER BY id"
+            ""SELECT * FROM public.products ORDER BY id""
         );
 
         res.json(result.rows);
@@ -139,7 +139,7 @@ app.post(
             }
 
             const result = await pool.query(
-                `INSERT INTO products
+                `INSERT INTO public.products
                 (name, category, price, stock, description, image)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING *`,
@@ -186,7 +186,7 @@ app.put(
 
             // Lấy sản phẩm cũ
             const oldProduct = await pool.query(
-                "SELECT * FROM products WHERE id = $1",
+                ""SELECT * FROM public.products WHERE id = $1"",
                 [id]
             );
 
@@ -249,7 +249,7 @@ app.put(
 
             // Cập nhật database
             const result = await pool.query(
-                `UPDATE products
+                `UPDATE public.products
                  SET
                     name = $1,
                     category = $2,
@@ -350,7 +350,7 @@ app.delete("/api/products/:id", async (req, res) => {
         const { id } = req.params;
 
         const result = await pool.query(
-            "DELETE FROM products WHERE id = $1 RETURNING *",
+            "DELETE FROM public.products WHERE id = $1 RETURNING *",
             [id]
         );
 
