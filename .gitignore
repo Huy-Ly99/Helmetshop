@@ -1,0 +1,22 @@
+# Node.js
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+
+# Local/private files
+username admin.txt
+
+server/uploads/

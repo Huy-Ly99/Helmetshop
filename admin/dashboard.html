@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - HelmetShop</title>
+
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="admin-logo">
+            🪖 Helmet<span>Shop</span>
+        </div>
+
+        <div class="admin-label">
+            ADMIN PANEL
+        </div>
+
+        <nav class="admin-menu">
+
+            <a href="#" class="menu-item active">
+                📊
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                🪖
+                <span>Sản phẩm</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                📦
+                <span>Đơn hàng</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                👥
+                <span>Khách hàng</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                📈
+                <span>Thống kê</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="../index.html" class="menu-item">
+                🏠
+                <span>Trang chủ</span>
+            </a>
+
+            <button class="logout-button" onclick="logout()">
+                🚪
+                <span>Đăng xuất</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="admin-main">
+
+        <!-- HEADER -->
+        <header class="admin-header">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Chào mừng bạn quay lại với HelmetShop.</p>
+            </div>
+
+            <div class="admin-account">
+                👤
+                <span id="adminEmail"></span>
+            </div>
+
+        </header>
+
+
+        <!-- STATISTICS -->
+        <section class="dashboard-cards">
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">
+                    🪖
+                </div>
+
+                <div>
+                    <p>Tổng sản phẩm</p>
+                    <h2 id="totalProducts">0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">
+                    📦
+                </div>
+
+                <div>
+                    <p>Đơn hàng</p>
+                    <h2>0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">
+                    👥
+                </div>
+
+                <div>
+                    <p>Khách hàng</p>
+                    <h2>0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-card">
+
+                <div class="card-icon">
+                    💰
+                </div>
+
+                <div>
+                    <p>Doanh thu</p>
+                    <h2>0đ</h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PRODUCT MANAGEMENT -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Quản lý sản phẩm</h2>
+                    <p>Danh sách sản phẩm từ PostgreSQL.</p>
+                </div>
+
+                <button
+                    class="add-product-button"
+                    onclick="showAddProductForm()">
+                    + Thêm sản phẩm
+                </button>
+
+            </div>
+
+
+            <!-- ADD PRODUCT FORM -->
+
+            <div
+                id="addProductForm"
+                style="display: none; margin-bottom: 30px;">
+
+                <div class="dashboard-section">
+
+                    <h2>Thêm sản phẩm</h2>
+
+                    <form id="productForm">
+
+                        <div>
+                            <label>Tên sản phẩm</label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Ví dụ: Nón AGV"
+                                required>
+                        </div>
+
+
+                        <div>
+                            <label>Danh mục</label>
+
+                            <input
+                                type="text"
+                                id="category"
+                                name="category"
+                                placeholder="Ví dụ: Fullface"
+                                required>
+                        </div>
+
+
+                        <div>
+                            <label>Giá</label>
+
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                placeholder="Ví dụ: 2500000"
+                                required>
+                        </div>
+
+
+                        <div>
+                            <label>Tồn kho</label>
+
+                            <input
+                                type="number"
+                                id="stock"
+                                name="stock"
+                                placeholder="Ví dụ: 10"
+                                required>
+                        </div>
+
+
+                        <div>
+                            <label>Mô tả</label>
+
+                            <textarea
+                                id="description"
+                                name="description"
+                                placeholder="Mô tả sản phẩm"></textarea>
+                        </div>
+
+
+                        <div>
+                            <label>Hình ảnh</label>
+
+                            <input
+                                type="file"
+                                id="image"
+                                name="image"
+                                accept="image/*">
+                        </div>
+
+
+                        <br>
+
+                        <button type="submit">
+
+                            Thêm sản phẩm
+                        </button>
+                        <button
+                            type="button"
+                            onclick="hideAddProductForm()">
+                            Hủy
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+<!-- EDIT PRODUCT FORM -->
+
+<div
+    id="editProductForm"
+    style="display: none; margin-bottom: 30px;">
+
+    <div class="dashboard-section">
+
+        <h2>Sửa sản phẩm</h2>
+
+        <form id="editForm">
+
+            <input
+                type="hidden"
+                id="editId">
+
+            <div>
+                <label>Tên sản phẩm</label>
+
+                <input
+                    type="text"
+                    id="editName"
+                    required>
+            </div>
+
+
+            <div>
+                <label>Danh mục</label>
+
+                <input
+                    type="text"
+                    id="editCategory"
+                    required>
+            </div>
+
+
+            <div>
+                <label>Giá</label>
+
+                <input
+                    type="number"
+                    id="editPrice"
+                    required>
+            </div>
+
+
+            <div>
+                <label>Tồn kho</label>
+
+                <input
+                    type="number"
+                    id="editStock"
+                    required>
+            </div>
+
+
+            <div>
+                <label>Mô tả</label>
+
+                <textarea
+                    id="editDescription"></textarea>
+            </div>
+
+
+            <div>
+                <label>Ảnh sản phẩm mới</label>
+
+                <input
+                    type="file"
+                    id="editImage"
+                    accept="image/*">
+            </div>
+
+
+            <br>
+
+
+            <button type="submit">
+                Cập nhật sản phẩm
+            </button>
+
+
+            <button
+                type="button"
+                onclick="hideEditProductForm()">
+
+                Hủy
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+            <!-- PRODUCT TABLE -->
+
+            <div class="product-table-container">
+
+                <table class="product-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Hình ảnh</th>
+
+                            <th>Tên sản phẩm</th>
+
+                            <th>Danh mục</th>
+
+                            <th>Giá</th>
+
+                            <th>Tồn kho</th>
+
+                            <th>Thao tác</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="productTableBody">
+
+                        <!-- Sản phẩm sẽ được JavaScript tải từ PostgreSQL -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        const API_URL = "http://localhost:3000";
+
+
+        // Hiển thị email admin
+
+        const adminEmail =
+            localStorage.getItem("adminEmail");
+
+        document.getElementById("adminEmail").textContent =
+            adminEmail || "admin@helmetshop.com";
+
+
+        // Hiển thị form
+
+        function showAddProductForm() {
+
+            document.getElementById("addProductForm").style.display =
+                "block";
+
+        }
+
+
+        // Ẩn form
+
+        function hideAddProductForm() {
+
+            document.getElementById("addProductForm").style.display =
+                "none";
+
+        }
+
+
+        // Load sản phẩm
+
+        async function loadProducts() {
+
+            try {
+
+                const response =
+                    await fetch(`${API_URL}/api/products`);
+
+                const products =
+                    await response.json();
+
+
+                const tableBody =
+                    document.getElementById("productTableBody");
+
+
+                tableBody.innerHTML = "";
+
+
+                document.getElementById("totalProducts").textContent =
+                    products.length;
+
+
+                products.forEach(product => {
+
+                    const row =
+                        document.createElement("tr");
+
+
+                    let imageHTML =
+                        `<div class="product-thumb">🪖</div>`;
+
+
+                    if (product.image) {
+
+                        imageHTML = `
+                            <img
+                                src="${API_URL}${product.image}"
+                                alt="${product.name}"
+                                style="
+                                    width:60px;
+                                    height:60px;
+                                    object-fit:cover;
+                                    border-radius:8px;
+                                "
+                            >
+                        `;
+
+                    }
+
+
+                    row.innerHTML = `
+
+                        <td>${product.id}</td>
+
+                        <td>
+                            ${imageHTML}
+                        </td>
+
+                        <td>
+                            ${product.name}
+                        </td>
+
+                        <td>
+                            ${product.category || ""}
+                        </td>
+
+                        <td>
+                            ${Number(product.price).toLocaleString("vi-VN")}đ
+                        </td>
+
+                        <td>
+                            ${product.stock}
+                        </td>
+
+                        <td>
+
+                            <button
+                                onclick="editProduct(${product.id})">
+                                Sửa
+                            </button>
+
+                            <button
+                                onclick="deleteProduct(${product.id})">
+                                Xóa
+                            </button>
+
+                        </td>
+
+                    `;
+
+
+                    tableBody.appendChild(row);
+
+                });
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Không thể kết nối tới server!"
+                );
+
+            }
+
+        }
+
+
+        // Thêm sản phẩm
+
+        document
+            .getElementById("productForm")
+            .addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+
+                const form =
+                    document.getElementById("productForm");
+
+
+                const formData =
+                    new FormData(form);
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API_URL}/api/products`,
+                            {
+                                method: "POST",
+                                body: formData
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok) {
+
+                        alert(
+                            data.message ||
+                            "Thêm sản phẩm thất bại!"
+                        );
+
+                        return;
+
+                    }
+
+
+                    alert(
+                        "Thêm sản phẩm thành công!"
+                    );
+
+
+                    form.reset();
+
+                    hideAddProductForm();
+
+                    loadProducts();
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Không thể kết nối tới server!"
+                    );
+
+                }
+
+            });
+
+
+        // Xóa sản phẩm
+
+        async function deleteProduct(id) {
+
+    const confirmDelete = confirm(
+        "Bạn có chắc muốn xóa sản phẩm này?"
+    );
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/products/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Xóa sản phẩm thất bại!"
+            );
+
+            return;
+        }
+
+        alert("Xóa sản phẩm thành công!");
+
+        loadProducts();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Không thể kết nối tới server!");
+
+    }
+
+}
+
+
+        // Sửa sản phẩm
+
+       // Hiển thị form sửa sản phẩm
+
+async function editProduct(id) {
+
+    try {
+
+        const response =
+            await fetch(`${API_URL}/api/products`);
+
+        const products =
+            await response.json();
+
+        const product =
+            products.find(item => item.id === id);
+
+
+        if (!product) {
+
+            alert("Không tìm thấy sản phẩm!");
+
+            return;
+        }
+
+
+        // Điền dữ liệu sản phẩm vào form
+
+        document.getElementById("editId").value =
+            product.id;
+
+        document.getElementById("editName").value =
+            product.name;
+
+        document.getElementById("editCategory").value =
+            product.category || "";
+
+        document.getElementById("editPrice").value =
+            product.price;
+
+        document.getElementById("editStock").value =
+            product.stock;
+
+        document.getElementById("editDescription").value =
+            product.description || "";
+
+
+        // Hiển thị form
+
+        document.getElementById("editProductForm").style.display =
+            "block";
+
+
+        // Cuộn tới form
+
+        document.getElementById("editProductForm")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Không thể lấy thông tin sản phẩm!");
+
+    }
+
+}
+
+
+// Ẩn form sửa
+
+function hideEditProductForm() {
+
+    document.getElementById("editProductForm").style.display =
+        "none";
+
+    document.getElementById("editForm").reset();
+
+}
+
+// Cập nhật sản phẩm
+
+document
+    .getElementById("editForm")
+    .addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+
+        const id =
+            document.getElementById("editId").value;
+
+        const name =
+            document.getElementById("editName").value;
+
+        const category =
+            document.getElementById("editCategory").value;
+
+        const price =
+            document.getElementById("editPrice").value;
+
+        const stock =
+            document.getElementById("editStock").value;
+
+        const description =
+            document.getElementById("editDescription").value;
+
+        const image =
+            document.getElementById("editImage").files[0];
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append("name", name);
+
+        formData.append("category", category);
+
+        formData.append("price", price);
+
+        formData.append("stock", stock);
+
+        formData.append("description", description);
+
+
+        // Nếu chọn ảnh mới thì gửi ảnh lên server
+
+        if (image) {
+
+            formData.append("image", image);
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/products/${id}`,
+                    {
+                        method: "PUT",
+                        body: formData
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                alert(
+                    data.message ||
+                    "Cập nhật sản phẩm thất bại!"
+                );
+
+                return;
+            }
+
+
+            alert(
+                "Cập nhật sản phẩm thành công!"
+            );
+
+
+            // Reset form
+
+            document
+                .getElementById("editForm")
+                .reset();
+
+
+            // Ẩn form
+
+            hideEditProductForm();
+
+
+            // Tải lại danh sách
+
+            loadProducts();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Không thể kết nối tới server!"
+            );
+
+        }
+
+    });
+
+        // Đăng xuất
+
+        function logout() {
+
+            localStorage.removeItem("adminEmail");
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        // Chạy khi mở Dashboard
+
+        loadProducts();
+
+    </script>
+
+</body>
+
+</html>
