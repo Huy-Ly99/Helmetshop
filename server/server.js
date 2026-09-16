@@ -186,7 +186,7 @@ app.put(
 
             // Lấy sản phẩm cũ
             const oldProduct = await pool.query(
-                ""SELECT * FROM public.products WHERE id = $1"",
+                "SELECT * FROM public.products WHERE id = $1",
                 [id]
             );
 
