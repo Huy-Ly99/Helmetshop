@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Nón nửa đầu - HelmetShop</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- HEADER -->
+
+     <!-- HEADER -->
+    <header class="header">
+
+        <div class="container header-content">
+
+            <!-- LOGO -->
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🪖</span>
+                <span>Helmet<span class="logo-highlight">Shop</span></span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Tìm kiếm nón bảo hiểm..."
+                >
+
+                <button onclick="searchProduct()">
+                    🔍
+                </button>
+            </div>
+
+            <!-- HEADER ACTION -->
+            <div class="header-actions">
+
+                <a href="admin/login.html" class="header-link">
+                    👤
+                    <span>Tài khoản</span>
+                </a>
+
+                <a href="#" class="cart">
+                    🛒
+                    <span>Giỏ hàng</span>
+                    <b id="cartCount">0</b>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+        <nav class="navbar">
+
+            <div class="container nav-content">
+
+                <a href="index.html" >
+                    Trang chủ
+                </a>
+
+                <a href="non-bao-hiem.html" >
+                    Nón bảo hiểm
+                </a>
+
+                <a href="#">
+                    Nón 3/4
+                </a>
+
+                <a href="#" >
+                    Nón Fullface
+                </a>
+
+                <a href="non-nua-dau.html" class="active">
+                    Nón nửa đầu
+                </a>
+
+                <a href="#">
+                    Phụ kiện
+                </a>
+
+                <a href="#" class="sale">
+                    🔥 Khuyến mãi
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- PAGE -->
+
+    <main>
+
+        <section class="products-section" >
+
+            <div class="container">
+
+
+                <!-- TITLE -->
+
+                <div class="section-title">
+
+                    <div>
+
+                        <h1 style="padding: 15px 0;">
+                            Nón bảo hiểm nửa đầu
+                        </h1>
+
+                        <p>
+                            Sản phẩm nón bảo hiểm nửa đầu
+                            tại HelmetShop
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PRODUCT GRID -->
+
+                <div
+                    class="product-grid"
+                    id="productGrid">
+
+                    <!-- JavaScript tải sản phẩm -->
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+<!-- PROMOTION -->
+    <section class="promotion" style="margin-top: 40px;">
+
+        <div class="container promotion-content">
+
+            <div>
+
+                <p>
+                    ƯU ĐÃI ĐẶC BIỆT
+                </p>
+
+                <h2>
+                    GIẢM 20% CHO ĐƠN HÀNG ĐẦU TIÊN
+                </h2>
+
+                <span>
+                    Nhập mã <strong>WELCOME20</strong> khi thanh toán
+                </span>
+
+            </div>
+
+            <a href="#products" class="btn btn-white">
+                Mua ngay
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <div class="container footer-grid">
+
+            <div class="footer-about">
+
+                <a href="#" class="logo footer-logo">
+                    🪖 Helmet<span class="logo-highlight">Shop</span>
+                </a>
+
+                <p>
+                    HelmetShop cung cấp các sản phẩm
+                    nón bảo hiểm chất lượng cao,
+                    an toàn và thời trang.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <h3>Thông tin</h3>
+
+                <a href="#">Giới thiệu</a>
+                <a href="#">Chính sách bảo hành</a>
+                <a href="#">Chính sách đổi trả</a>
+                <a href="#">Chính sách giao hàng</a>
+
+            </div>
+
+
+            <div>
+
+                <h3>Hỗ trợ</h3>
+
+                <a href="#">Hướng dẫn mua hàng</a>
+                <a href="#">Câu hỏi thường gặp</a>
+                <a href="#">Liên hệ</a>
+
+            </div>
+
+
+            <div>
+
+                <h3>Liên hệ</h3>
+
+                <p>📍 TP. Hồ Chí Minh</p>
+                <p>📞 0123 456 789</p>
+                <p>✉️ support@helmetshop.vn</p>
+
+            </div>
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 HelmetShop. All rights reserved.
+
+        </div>
+
+    </footer>
+
+
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        const API_URL = "https://helmetshop-api.onrender.com";
+
+
+        async function loadHelmetProducts() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/products`
+                    );
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Không thể lấy sản phẩm"
+                    );
+
+                }
+
+
+                const products =
+                    await response.json();
+
+
+                const productGrid =
+                    document.getElementById(
+                        "productGrid"
+                    );
+
+
+                productGrid.innerHTML = "";
+
+
+                // Lọc sản phẩm có chữ "nón nửa đầu"
+                const helmetProducts =
+                    products.filter(product => {
+
+                        const name =
+                            product.name ||
+                            "";
+
+                        const category =
+                            product.category ||
+                            "";
+
+
+                        return (
+                            name
+                                .toLowerCase()
+                                .includes("nón nửa đầu")
+
+                            ||
+
+                            category
+                                .toLowerCase()
+                                .includes("nón nửa đầu")
+                        );
+
+                    });
+
+
+                // Không có sản phẩm
+
+                if (
+                    helmetProducts.length === 0
+                ) {
+
+                    productGrid.innerHTML = `
+                        <p>
+                            Không tìm thấy sản phẩm nón bảo hiểm.
+                        </p>
+                    `;
+
+                    return;
+
+                }
+
+
+                // Hiển thị sản phẩm
+
+                helmetProducts.forEach(
+                    product => {
+
+
+                        let imageHTML = `
+                            <div class="helmet-placeholder">
+                                🪖
+                            </div>
+                        `;
+
+
+                        if (product.image) {
+
+                            const imageUrl = product.image.startsWith("http")
+                                ? product.image
+                                : `${API_URL}${product.image}`;
+
+                            imageHTML = `
+                                <img
+                                    src="${imageUrl}"
+                                    alt="${product.name}"
+                                >
+                            `;
+
+                        }
+
+
+                        const productCard = `
+
+                            <div class="product-card">
+
+
+                                <div class="product-image">
+
+                                    ${imageHTML}
+
+
+                                    <button
+                                        class="heart">
+
+                                        ♡
+
+                                    </button>
+
+                                </div>
+
+
+
+                                <div class="product-info">
+
+
+                                    <p
+                                        class="product-category">
+
+                                        ${product.category || ""}
+
+                                    </p>
+
+
+                                    <h3>
+
+                                        ${product.name}
+
+                                    </h3>
+
+
+                                    <div class="rating">
+
+                                        ⭐⭐⭐⭐⭐
+
+                                    </div>
+
+
+                                    <div
+                                        class="product-bottom">
+
+
+                                        <strong>
+
+                                            ${Number(
+                                                product.price
+                                            ).toLocaleString(
+                                                "vi-VN"
+                                            )}đ
+
+                                        </strong>
+
+
+                                        <button
+                                            class="add-cart"
+                                            onclick="addToCart()">
+
+                                            +
+
+                                        </button>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        `;
+
+
+                        productGrid.innerHTML +=
+                            productCard;
+
+                    }
+
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+
+                document.getElementById(
+                    "productGrid"
+                ).innerHTML = `
+
+                    <p>
+                        Không thể tải sản phẩm.
+                    </p>
+
+                `;
+
+            }
+
+        }
+
+
+        // Chạy khi mở trang
+
+        loadHelmetProducts();
+
+
+    </script>
+
+
+    <script src="js/script.js"></script>
+
+
+</body>
+
+</html>
