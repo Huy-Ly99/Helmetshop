@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const multer = require("multer");
-const fs = require("fs");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { v2: cloudinary } = require("cloudinary");
 const pool = require("./db");
 
 const app = express();
@@ -14,16 +14,17 @@ const PORT = process.env.PORT || 3000;
 // MULTER - UPLOAD IMAGE
 // =========================
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, "uploads"));
-    },
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-    filename: function (req, file, cb) {
-        const uniqueName =
-            Date.now() + "-" + file.originalname;
-
-        cb(null, uniqueName);
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "helmetshop",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"]
     }
 });
 
@@ -42,12 +43,6 @@ const upload = multer({
 app.use(cors());
 
 app.use(express.json());
-
-app.use(
-    "/uploads",
-    express.static(path.join(__dirname, "uploads"))
-);
-
 
 // =========================
 // TEST SERVER
@@ -135,7 +130,7 @@ app.post(
             let image = null;
 
             if (req.file) {
-                image = "/uploads/" + req.file.filename;
+                image = req.file.path;
             }
 
             const result = await pool.query(
@@ -194,29 +189,18 @@ app.put(
             // Không tìm thấy sản phẩm
             if (oldProduct.rows.length === 0) {
 
-                // Nếu người dùng đã upload ảnh nhưng sản phẩm không tồn tại
-                // thì xóa ảnh vừa upload để tránh file rác
-                if (req.file) {
+                return res.status(404).json({
+                message: "Không tìm thấy sản phẩm!"
+                });
 
-                    const uploadedImagePath =
-                        path.join(
-                            __dirname,
-                            "uploads",
-                            req.file.filename
-                        );
-
-                    if (fs.existsSync(uploadedImagePath)) {
-                        fs.unlinkSync(uploadedImagePath);
-                    }
-
-                }
+            }       
 
 
                 return res.status(404).json({
                     message: "Không tìm thấy sản phẩm!"
                 });
 
-            }
+            
 
 
             // Lưu đường dẫn ảnh cũ
@@ -237,13 +221,9 @@ app.put(
             let image = oldImage;
 
 
-            // Nếu có ảnh mới
+            // Nếu có ảnh mới từ Cloudinary
             if (req.file) {
-
-                image =
-                    "/uploads/" +
-                    req.file.filename;
-
+                image = req.file.path;
             }
 
 
@@ -269,26 +249,7 @@ app.put(
                     image,
                     id
                 ]
-            );
-
-
-            // Nếu có ảnh mới thì xóa ảnh cũ
-            if (req.file && oldImage) {
-
-                const oldImagePath =
-                    path.join(
-                        __dirname,
-                        oldImage.replace("/uploads/", "uploads/")
-                    );
-
-
-                if (fs.existsSync(oldImagePath)) {
-
-                    fs.unlinkSync(oldImagePath);
-
-                }
-
-            }
+            )
 
 
             res.json({
@@ -304,28 +265,7 @@ app.put(
 
         } catch (error) {
 
-            console.error(error);
-
-
-            // Nếu database update lỗi nhưng ảnh mới
-            // đã được upload thì xóa ảnh mới
-            if (req.file) {
-
-                const uploadedImagePath =
-                    path.join(
-                        __dirname,
-                        "uploads",
-                        req.file.filename
-                    );
-
-
-                if (fs.existsSync(uploadedImagePath)) {
-
-                    fs.unlinkSync(uploadedImagePath);
-
-                }
-
-            }
+            console.error(error)
 
 
             res.status(500).json({
