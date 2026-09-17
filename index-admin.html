@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HelmetShop - Nón bảo hiểm chính hãng</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+
+        <div class="container header-content">
+
+            <!-- LOGO -->
+            <a href="index.html" class="logo">
+                <span class="logo-icon">🪖</span>
+                <span>Helmet<span class="logo-highlight">Shop</span></span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Tìm kiếm nón bảo hiểm..."
+                >
+
+                <button onclick="searchProduct()">
+                    🔍
+                </button>
+            </div>
+
+            <!-- HEADER ACTION -->
+            <div class="header-actions">
+
+                <a href="admin/dashboard.html" class="header-link">
+                    👤
+                    <span>Tài khoản</span>
+                </a>
+
+                <a href="#" class="cart">
+                    🛒
+                    <span>Giỏ hàng</span>
+                    <b id="cartCount">0</b>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+        <nav class="navbar">
+
+            <div class="container nav-content">
+
+                <a href="index.html" class="active">
+                    Trang chủ
+                </a>
+
+                <a href="non-bao-hiem.html">
+                    Nón bảo hiểm
+                </a>
+
+                <a href="#">
+                    Nón 3/4
+                </a>
+
+                <a href="#">
+                    Nón Fullface
+                </a>
+
+                <a href="non-nua-dau.html">
+                    Nón nửa đầu
+                </a>
+
+                <a href="#">
+                    Phụ kiện
+                </a>
+
+                <a href="#" class="sale">
+                    🔥 Khuyến mãi
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- HERO -->
+    <section class="hero">
+
+        <div class="container hero-content">
+
+            <div class="hero-text">
+
+                <p class="hero-small">
+                    HELMETSHOP
+                </p>
+
+                <h1>
+                    BẢO VỆ BẠN<br>
+                    TRÊN MỌI HÀNH TRÌNH
+                </h1>
+
+                <p class="hero-description">
+                    Nón bảo hiểm chất lượng cao,
+                    thiết kế thời trang và an toàn
+                    cho mọi chuyến đi.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#products" class="btn btn-primary">
+                        Mua ngay
+                    </a>
+
+                    <a href="#categories" class="btn btn-outline">
+                        Xem sản phẩm
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-image">
+
+                <div class="helmet-circle">
+                    🪖
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- BENEFITS -->
+    <section class="benefits">
+
+        <div class="container benefits-grid">
+
+            <div class="benefit">
+                <div class="benefit-icon">🛡️</div>
+
+                <div>
+                    <h3>An toàn tuyệt đối</h3>
+                    <p>Sản phẩm đạt tiêu chuẩn chất lượng</p>
+                </div>
+            </div>
+
+
+            <div class="benefit">
+                <div class="benefit-icon">🚚</div>
+
+                <div>
+                    <h3>Giao hàng nhanh</h3>
+                    <p>Giao hàng toàn quốc</p>
+                </div>
+            </div>
+
+
+            <div class="benefit">
+                <div class="benefit-icon">🔄</div>
+
+                <div>
+                    <h3>Đổi trả dễ dàng</h3>
+                    <p>Đổi sản phẩm trong 7 ngày</p>
+                </div>
+            </div>
+
+
+            <div class="benefit">
+                <div class="benefit-icon">💳</div>
+
+                <div>
+                    <h3>Thanh toán an toàn</h3>
+                    <p>Nhiều phương thức thanh toán</p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORY -->
+    <section class="section" id="categories">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <p>DANH MỤC</p>
+
+                <h2>
+                    KHÁM PHÁ SẢN PHẨM
+                </h2>
+
+            </div>
+
+
+            <div class="category-grid">
+
+                <a href="#" class="category-card">
+
+                    <div class="category-image">
+                        🪖
+                    </div>
+
+                    <h3>Nón Fullface</h3>
+
+                    <p>Bảo vệ toàn diện</p>
+
+                </a>
+
+
+                <a href="#" class="category-card">
+
+                    <div class="category-image">
+                        🪖
+                    </div>
+
+                    <h3>Nón 3/4</h3>
+
+                    <p>Phong cách & tiện dụng</p>
+
+                </a>
+
+
+                <a href="#" class="category-card">
+
+                    <div class="category-image">
+                        🪖
+                    </div>
+
+                    <h3>Nón nửa đầu</h3>
+
+                    <p>Nhẹ nhàng & thoải mái</p>
+
+                </a>
+
+
+                <a href="#" class="category-card">
+
+                    <div class="category-image">
+                        🧤
+                    </div>
+
+                    <h3>Phụ kiện</h3>
+
+                    <p>Đồ dùng cho biker</p>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+    <section class="section products-section" id="products">
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <div class="section-title left">
+
+                    <p>SẢN PHẨM</p>
+
+                    <h2>
+                        SẢN PHẨM NỔI BẬT
+                    </h2>
+
+                </div>
+
+                <a href="#" class="view-all">
+                    Xem tất cả →
+                </a>
+
+            </div>
+
+            <div class="product-grid" id="productGrid">
+
+                <!-- Sản phẩm sẽ được tải từ PostgreSQL -->
+
+            </div>             
+            
+
+        </div>
+
+    </section>
+
+
+    <!-- PROMOTION -->
+    <section class="promotion">
+
+        <div class="container promotion-content">
+
+            <div>
+
+                <p>
+                    ƯU ĐÃI ĐẶC BIỆT
+                </p>
+
+                <h2>
+                    GIẢM 20% CHO ĐƠN HÀNG ĐẦU TIÊN
+                </h2>
+
+                <span>
+                    Nhập mã <strong>WELCOME20</strong> khi thanh toán
+                </span>
+
+            </div>
+
+            <a href="#products" class="btn btn-white">
+                Mua ngay
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="container footer-grid">
+
+            <div class="footer-about">
+
+                <a href="#" class="logo footer-logo">
+                    🪖 Helmet<span class="logo-highlight">Shop</span>
+                </a>
+
+                <p>
+                    HelmetShop cung cấp các sản phẩm
+                    nón bảo hiểm chất lượng cao,
+                    an toàn và thời trang.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <h3>Thông tin</h3>
+
+                <a href="#">Giới thiệu</a>
+                <a href="#">Chính sách bảo hành</a>
+                <a href="#">Chính sách đổi trả</a>
+                <a href="#">Chính sách giao hàng</a>
+
+            </div>
+
+
+            <div>
+
+                <h3>Hỗ trợ</h3>
+
+                <a href="#">Hướng dẫn mua hàng</a>
+                <a href="#">Câu hỏi thường gặp</a>
+                <a href="#">Liên hệ</a>
+
+            </div>
+
+
+            <div>
+
+                <h3>Liên hệ</h3>
+
+                <p>📍 TP. Hồ Chí Minh</p>
+                <p>📞 0123 456 789</p>
+                <p>✉️ support@helmetshop.vn</p>
+
+            </div>
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 HelmetShop. All rights reserved.
+
+        </div>
+
+    </footer>
+
+    <script>
+
+    const API_URL = "https://helmetshop-api.onrender.com";
+
+
+    async function loadProducts() {
+
+        try {
+
+            const response =
+                await fetch(`${API_URL}/api/products`);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Không thể lấy danh sách sản phẩm"
+                );
+
+            }
+
+            const products =
+                await response.json();
+
+
+            const productGrid =
+                document.getElementById("productGrid");
+
+
+            productGrid.innerHTML = "";
+
+
+            products.forEach(product => {
+
+                let imageHTML = `
+                    <div class="helmet-placeholder">
+                        🪖
+                    </div>
+                `;
+
+
+                if (product.image) {
+
+                    const imageUrl = product.image.startsWith("http")
+                        ? product.image
+                        : `${API_URL}${product.image}`;
+
+                    imageHTML = `
+                        <img
+                            src="${imageUrl}"
+                            alt="${product.name}"
+                        >
+                    `;
+
+                }
+
+
+                const productCard = `
+
+                    <div class="product-card">
+
+                        <div class="product-image">
+
+                            <div class="helmet-placeholder">
+
+                                ${imageHTML}
+
+                            </div>
+
+                            <button class="heart">
+                                ♡
+                            </button>
+
+                        </div>
+
+
+                        <div class="product-info">
+
+                            <p class="product-category">
+                                ${product.category || ""}
+                            </p>
+
+
+                            <h3>
+                                ${product.name}
+                            </h3>
+
+
+                            <div class="rating">
+                                ⭐⭐⭐⭐⭐
+                            </div>
+
+
+                            <div class="product-bottom">
+
+                                <strong>
+                                    ${Number(product.price)
+                                        .toLocaleString("vi-VN")}đ
+                                </strong>
+
+
+                                <button
+                                    class="add-cart"
+                                    onclick="addToCart()"
+                                >
+                                    +
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                productGrid.innerHTML += productCard;
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("productGrid").innerHTML = `
+
+                <p>
+                    Không thể tải sản phẩm.
+                </p>
+
+            `;
+
+        }
+
+    }
+
+
+    loadProducts();
+
+</script>
+
+<script src="js/script.js"></script>
+
+</body>
+</html>
