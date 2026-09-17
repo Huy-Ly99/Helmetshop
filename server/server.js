@@ -280,7 +280,7 @@ app.delete("/api/products/:id", async (req, res) => {
     try {
 
         const { id } = req.params;
-
+        console.log("PUT ID:", id);
         const result = await pool.query(
             "DELETE FROM public.products WHERE id = $1 RETURNING *",
             [id]
