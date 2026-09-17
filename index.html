@@ -440,9 +440,13 @@
 
                 if (product.image) {
 
+                    const imageUrl = product.image.startsWith("http")
+                        ? product.image
+                        : `${API_URL}${product.image}`;
+
                     imageHTML = `
                         <img
-                            src="${API_URL}${product.image}"
+                            src="${imageUrl}"
                             alt="${product.name}"
                         >
                     `;
