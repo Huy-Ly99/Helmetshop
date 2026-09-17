@@ -467,7 +467,7 @@
                     products.length;
 
 
-                products.forEach(product => {
+                products.forEach((product, index) => {
 
                     const row =
                         document.createElement("tr");
@@ -500,6 +500,7 @@
 
 
                     row.innerHTML = `
+                        <td>${index + 1}</td>
 
                         <td>${product.id}</td>
 
