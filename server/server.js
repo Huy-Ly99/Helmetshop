@@ -177,7 +177,7 @@ app.put(
         try {
 
             const { id } = req.params;
-
+            console.log("PUT ID:", id);
 
             // Lấy sản phẩm cũ
             const oldProduct = await pool.query(
@@ -194,15 +194,7 @@ app.put(
                 });
 
             }       
-
-
-                return res.status(404).json({
-                    message: "Không tìm thấy sản phẩm!"
-                });
-
             
-
-
             // Lưu đường dẫn ảnh cũ
             const oldImage =
                 oldProduct.rows[0].image;

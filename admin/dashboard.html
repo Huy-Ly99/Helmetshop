@@ -682,7 +682,6 @@
        // Hiển thị form sửa sản phẩm
 
 async function editProduct(id) {
-
     try {
 
         const response =
@@ -690,6 +689,7 @@ async function editProduct(id) {
 
         const products =
             await response.json();
+
 
         const product =
             products.find(item => Number(item.id) === Number(id));
@@ -816,7 +816,7 @@ document
 
 
         try {
-
+            
             const response =
                 await fetch(
                     `${API_URL}/api/products/${id}`,
@@ -828,7 +828,7 @@ document
 
 
             const data =
-                await response.json();
+    await response.json();
 
 
             if (!response.ok) {
