@@ -692,7 +692,7 @@ async function editProduct(id) {
             await response.json();
 
         const product =
-            products.find(item => item.id === id);
+            products.find(item => Number(item.id) === Number(id));
 
 
         if (!product) {
