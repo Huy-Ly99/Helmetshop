@@ -9,7 +9,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Nón nửa đầu - HelmetShop</title>
+    <title>Phụ kiện - HelmetShop</title>
 
     <link
         rel="stylesheet"
@@ -79,7 +79,7 @@
                     Nón bảo hiểm
                 </a>
 
-                <a href="non-3-phan-4.html">
+                <a href="non-3-phan-4.html" >
                     Nón 3/4
                 </a>
 
@@ -87,11 +87,11 @@
                     Nón Fullface
                 </a>
 
-                <a href="non-nua-dau.html" class="active">
+                <a href="non-nua-dau.html">
                     Nón nửa đầu
                 </a>
 
-                <a href="phu-kien.html">
+                <a href="phu-kien.html" class="active">
                     Phụ kiện
                 </a>
 
@@ -123,11 +123,11 @@
                     <div>
 
                         <h1 style="padding: 15px 0;">
-                            Nón bảo hiểm nửa đầu
+                            Phụ kiện
                         </h1>
 
                         <p>
-                            Sản phẩm nón bảo hiểm nửa đầu
+                            Sản phẩm phụ kiện
                             tại HelmetShop
                         </p>
 
@@ -289,7 +289,7 @@
                 productGrid.innerHTML = "";
 
 
-                // Lọc sản phẩm có chữ "nón nửa đầu"
+                // Lọc sản phẩm có chữ "nón 3/4"
                 const helmetProducts =
                     products.filter(product => {
 
@@ -305,13 +305,13 @@
                         return (
                             name
                                 .toLowerCase()
-                                .includes("nón nửa đầu")
+                                .includes("phụ kiện")
 
                             ||
 
                             category
                                 .toLowerCase()
-                                .includes("nón nửa đầu")
+                                .includes("phụ kiện")
                         );
 
                     });
