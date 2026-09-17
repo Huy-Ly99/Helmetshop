@@ -386,6 +386,6 @@ app.delete("/api/products/:id", async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(
-        `HelmetShop Server đang chạy tại http://localhost:${PORT}`
+        `HelmetShop Server đang chạy tại https://helmetshop-986y.onrender.com/api/products`
     );
 });
