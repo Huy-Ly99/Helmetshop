@@ -80,6 +80,108 @@ app.post("/api/cart", async (req, res) => {
     }
 });
 
+app.post("/api/cart/items", async (req, res) => {
+    try {
+        const { cartToken, productId, quantity } = req.body;
+
+        if (!cartToken || !productId || !quantity) {
+            return res.status(400).json({
+                message: "Thiếu cartToken, productId hoặc quantity."
+            });
+        }
+
+        // 1. Tìm giỏ hàng
+        const cartResult = await pool.query(
+            `SELECT id
+             FROM public.carts
+             WHERE cart_token = $1`,
+            [cartToken]
+        );
+
+        if (cartResult.rows.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+        }
+
+        const cartId = cartResult.rows[0].id;
+
+        // 2. Tìm sản phẩm
+        const productResult = await pool.query(
+            `SELECT id, name, price, stock, image
+             FROM public.products
+             WHERE id = $1`,
+            [productId]
+        );
+
+        if (productResult.rows.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy sản phẩm."
+            });
+        }
+
+        const product = productResult.rows[0];
+
+        // 3. Kiểm tra số lượng
+        if (quantity <= 0) {
+            return res.status(400).json({
+                message: "Số lượng phải lớn hơn 0."
+            });
+        }
+
+        if (quantity > product.stock) {
+            return res.status(400).json({
+                message: `Sản phẩm chỉ còn ${product.stock} cái.`
+            });
+        }
+
+        // 4. Thêm vào giỏ
+        const result = await pool.query(
+            `INSERT INTO public.cart_items
+                (cart_id, product_id, quantity)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (cart_id, product_id)
+             DO UPDATE SET
+                quantity = public.cart_items.quantity + EXCLUDED.quantity,
+                updated_at = CURRENT_TIMESTAMP
+             RETURNING *`,
+            [cartId, productId, quantity]
+        );
+
+        // 5. Kiểm tra tổng số lượng sau khi thêm
+        const finalQuantity = result.rows[0].quantity;
+
+        if (finalQuantity > product.stock) {
+            // Nếu vượt tồn kho thì rollback bằng cách xóa lại phần vừa cộng
+            await pool.query(
+                `UPDATE public.cart_items
+                 SET quantity = quantity - $1,
+                     updated_at = CURRENT_TIMESTAMP
+                 WHERE cart_id = $2
+                   AND product_id = $3`,
+                [quantity, cartId, productId]
+            );
+
+            return res.status(400).json({
+                message: `Không thể thêm. Trong kho chỉ còn ${product.stock} cái.`
+            });
+        }
+
+        res.status(201).json({
+            message: "Đã thêm sản phẩm vào giỏ hàng!",
+            cartItem: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error("Add cart item error:", error);
+
+        res.status(500).json({
+            message: "Không thể thêm sản phẩm vào giỏ hàng.",
+            error: error.message
+        });
+    }
+});
+
 app.post("/api/admin/login", async (req, res) => {
     try {
         const { email, password } = req.body;
