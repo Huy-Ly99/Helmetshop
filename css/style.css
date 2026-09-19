@@ -139,6 +139,30 @@ button {
     display: none;
 }
 
+#accountLink {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    position: relative;
+}
+
+#adminAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+#logoutLink {
+    display: none;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    position: relative;
+}
+
 /* NAVBAR */
 
 .navbar {

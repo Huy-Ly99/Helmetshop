@@ -22,6 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
             accountLink.href = "admin/dashboard.html";
         }
 
+        // Hiện avatar Admin
+    const adminAvatar = document.getElementById("adminAvatar");
+
+    if (adminAvatar) {
+        adminAvatar.style.display = "block";
+    }
+
         // Ẩn giỏ hàng nếu muốn Admin không sử dụng giỏ hàng
         const cartLink =
             document.getElementById("cartLink");
