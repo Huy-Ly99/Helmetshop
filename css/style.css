@@ -172,6 +172,7 @@ button {
 .nav-content {
     display: flex;
     align-items: center;
+    justify-content: center;
     height: 48px;
     gap: 35px;
 }
