@@ -182,6 +182,73 @@ app.post("/api/cart/items", async (req, res) => {
     }
 });
 
+app.get("/api/cart/:cartToken", async (req, res) => {
+    try {
+        const { cartToken } = req.params;
+
+        // 1. Tìm cart
+        const cartResult = await pool.query(
+            `SELECT id, cart_token
+             FROM public.carts
+             WHERE cart_token = $1`,
+            [cartToken]
+        );
+
+        if (cartResult.rows.length === 0) {
+            return res.status(404).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+        }
+
+        const cart = cartResult.rows[0];
+
+        // 2. Lấy sản phẩm trong cart
+        const itemsResult = await pool.query(
+            `SELECT
+                ci.id,
+                ci.product_id,
+                ci.quantity,
+                p.name,
+                p.price,
+                p.image,
+                p.stock,
+                (p.price * ci.quantity) AS subtotal
+             FROM public.cart_items ci
+             JOIN public.products p
+                ON ci.product_id = p.id
+             WHERE ci.cart_id = $1
+             ORDER BY ci.id`,
+            [cart.id]
+        );
+
+        // 3. Tính tổng tiền
+        const total = itemsResult.rows.reduce(
+            (sum, item) => {
+                return sum + Number(item.subtotal);
+            },
+            0
+        );
+
+        res.json({
+            message: "Lấy giỏ hàng thành công!",
+            cart: {
+                id: cart.id,
+                cartToken: cart.cart_token,
+                items: itemsResult.rows,
+                total: total
+            }
+        });
+
+    } catch (error) {
+        console.error("Get cart error:", error);
+
+        res.status(500).json({
+            message: "Không thể lấy giỏ hàng.",
+            error: error.message
+        });
+    }
+});
+
 app.post("/api/admin/login", async (req, res) => {
     try {
         const { email, password } = req.body;
