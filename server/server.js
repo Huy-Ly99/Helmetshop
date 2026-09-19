@@ -216,6 +216,11 @@ app.put(
             // Nếu có ảnh mới từ Cloudinary
             if (req.file) {
                 image = req.file.path;
+
+                console.log(
+                    "Ảnh mới:",
+                    image
+                );
             }
 
 
@@ -242,7 +247,98 @@ app.put(
                     id
                 ]
             )
+            
+            
 
+            // =========================
+            // 7. NẾU UPDATE DB THÀNH CÔNG
+            //    THÌ XÓA ẢNH CŨ
+            // =========================
+
+            if (req.file && oldImage) {
+
+                try {
+
+                    // Lấy public_id từ URL Cloudinary
+                    const parts =
+                        oldImage.split("/");
+
+                    const uploadIndex =
+                        parts.indexOf("upload");
+
+
+                    if (uploadIndex !== -1) {
+
+                        let publicIdParts =
+                            parts.slice(
+                                uploadIndex + 1
+                            );
+
+
+                        // Bỏ version v123456 nếu có
+                        if (
+                            publicIdParts[0] &&
+                            /^v\d+$/.test(
+                                publicIdParts[0]
+                            )
+                        ) {
+
+                            publicIdParts.shift();
+
+                        }
+
+
+                        // Ghép folder + tên file
+                        let publicId =
+                            publicIdParts.join("/");
+
+
+                        // Bỏ extension .jpg/.png/.webp...
+                        publicId =
+                            publicId.replace(
+                                /\.[^/.]+$/,
+                                ""
+                            );
+
+
+                        console.log(
+                            "Public ID ảnh cũ:",
+                            publicId
+                        );
+
+
+                        // Xóa ảnh cũ trên Cloudinary
+                        const deleteResult =
+                            await cloudinary.uploader.destroy(
+                                publicId
+                            );
+
+
+                        console.log(
+                            "Kết quả xóa ảnh cũ:",
+                            deleteResult
+                        );
+
+                    }
+
+                } catch (deleteError) {
+
+                    // Không làm hỏng việc update sản phẩm
+                    // nếu xóa ảnh cũ gặp lỗi
+
+                    console.error(
+                        "Không thể xóa ảnh cũ trên Cloudinary:",
+                        deleteError
+                    );
+
+                }
+
+            }
+
+
+            // =========================
+            // 8. TRẢ KẾT QUẢ
+            // =========================
 
             res.json({
 
@@ -257,7 +353,7 @@ app.put(
 
         } catch (error) {
 
-            console.error(error)
+            console.error(error);
 
 
             res.status(500).json({
