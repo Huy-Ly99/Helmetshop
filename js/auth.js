@@ -18,8 +18,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("accountLink");
 
         if (accountLink) {
-            accountLink.textContent = "Admin";
             accountLink.href = "admin/dashboard.html";
+
+const text = accountLink.querySelector("span");
+
+if (text) {
+    text.textContent = "Admin";
+}
         }
 
         // Hiện avatar Admin
