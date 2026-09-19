@@ -46,6 +46,40 @@ const upload = multer({
 
 app.use(cors());
 app.use(express.json());
+
+// ===============================
+// CART API
+// ===============================
+
+// Tạo giỏ hàng mới
+app.post("/api/cart", async (req, res) => {
+    try {
+        const crypto = require("crypto");
+
+        const cartToken = crypto.randomBytes(32).toString("hex");
+
+        const result = await pool.query(
+            `INSERT INTO public.carts (cart_token)
+             VALUES ($1)
+             RETURNING *`,
+            [cartToken]
+        );
+
+        res.status(201).json({
+            message: "Tạo giỏ hàng thành công!",
+            cart: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error("Create cart error:", error);
+
+        res.status(500).json({
+            message: "Không thể tạo giỏ hàng",
+            error: error.message
+        });
+    }
+});
+
 app.post("/api/admin/login", async (req, res) => {
     try {
         const { email, password } = req.body;

@@ -462,19 +462,24 @@
 
                     <div class="product-card">
 
-                        <div class="product-image">
+                        data-id="${product.id}"
+         data-name="${product.name}"
+         data-price="${product.price}"
+         data-image="${product.image || ""}">
 
-                            <div class="helmet-placeholder">
+        <div class="product-image">
 
-                                ${imageHTML}
+            <div class="helmet-placeholder">
 
-                            </div>
+                ${imageHTML}
 
-                            <button class="heart">
-                                ♡
-                            </button>
+            </div>
 
-                        </div>
+            <button class="heart">
+                ♡
+            </button>
+
+        </div>
 
 
                         <div class="product-info">
@@ -504,7 +509,7 @@
 
                                 <button
                                     class="add-cart"
-                                    onclick="addToCart()"
+                                    onclick="addToCart(this)"
                                 >
                                     +
                                 </button>
@@ -518,7 +523,7 @@
                 `;
 
 
-                productGrid.innerHTML += productCard;
+              
 
             });
 
