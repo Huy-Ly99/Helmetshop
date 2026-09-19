@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.removeItem("adminLoggedIn");
 
                     window.location.href =
-                        "admin/login.html";
+                        "dashboard.html";
                 }
             );
         }
