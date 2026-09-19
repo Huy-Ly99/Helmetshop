@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Giỏ hàng - HelmetHop</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cart.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        .cart-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .cart-title {
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .cart-products {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr auto;
+            gap: 20px;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .cart-item-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .cart-item-price {
+            color: #e53935;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .quantity-box {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .quantity-btn:hover {
+            background: #ddd;
+        }
+
+        .quantity-value {
+            width: 40px;
+            height: 32px;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .item-total {
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: right;
+        }
+
+        .remove-btn {
+            border: none;
+            background: none;
+            color: #e53935;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-btn:hover {
+            text-decoration: underline;
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            position: sticky;
+            top: 20px;
+        }
+
+        .cart-summary h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .summary-total {
+            border-top: 1px solid #ddd;
+            padding-top: 18px;
+            margin-top: 20px;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #111;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .checkout-btn:hover {
+            background: #333;
+        }
+
+        .continue-btn {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #111;
+            text-decoration: none;
+        }
+
+        .continue-btn:hover {
+            text-decoration: underline;
+        }
+
+        .empty-cart {
+            background: white;
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .empty-cart-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .empty-cart h2 {
+            margin-bottom: 10px;
+        }
+
+        .empty-cart p {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .shopping-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #111;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 768px) {
+
+            .cart-container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .cart-title {
+                font-size: 24px;
+            }
+
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 12px;
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .cart-item-right {
+                grid-column: 2;
+            }
+
+            .item-total {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Nếu website của bạn đã có header,
+         giữ header hiện tại và bỏ phần này -->
+    <header style="
+        background:#111;
+        padding:18px 30px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+        <a href="index.html"
+           style="color:white;text-decoration:none;font-size:24px;font-weight:bold;">
+            HelmetHop
+        </a>
+
+        <a href="cart.html"
+           style="color:white;text-decoration:none;">
+            🛒 Giỏ hàng
+            <span id="cartCount">0</span>
+        </a>
+    </header>
+
+
+    <main class="cart-container">
+
+        <h1 class="cart-title">
+            Giỏ hàng của bạn
+        </h1>
+
+        <div id="cartContent"></div>
+
+    </main>
+
+
+    <script src="js/cart.js"></script>
+
+</body>
+</html>
