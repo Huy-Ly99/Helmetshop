@@ -1,10 +1,10 @@
+
 // ========================================
 // ADMIN LOGIN
 // ========================================
 
-function adminLogin() {
+async function adminLogin() {
 
-    // Lấy dữ liệu từ form
     const email = document
         .getElementById("email")
         .value
@@ -17,8 +17,10 @@ function adminLogin() {
     const errorMessage =
         document.getElementById("errorMessage");
 
+    // ========================================
+    // XÓA THÔNG BÁO CŨ
+    // ========================================
 
-    // Xóa thông báo cũ
     errorMessage.textContent = "";
 
 
@@ -34,7 +36,6 @@ function adminLogin() {
         return;
     }
 
-
     if (password === "") {
 
         errorMessage.textContent =
@@ -45,34 +46,62 @@ function adminLogin() {
 
 
     // ========================================
-    // TÀI KHOẢN DEMO
+    // GỌI API LOGIN
     // ========================================
 
-    const adminEmail =
-        "admin@helmetshop.com";
+    try {
 
-    const adminPassword =
-        "Admin@123";
+        const response = await fetch(
+            "https://helmetshop-api.onrender.com/api/admin/login",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
 
-    // ========================================
-    // KIỂM TRA LOGIN
-    // ========================================
+        const data = await response.json();
 
-    if (
-        email === adminEmail &&
-        password === adminPassword
-    ) {
 
-        // Lưu trạng thái đăng nhập
+        // ========================================
+        // LOGIN THẤT BẠI
+        // ========================================
+
+        if (!response.ok) {
+
+            errorMessage.textContent =
+                data.message ||
+                "Đăng nhập thất bại.";
+
+            return;
+        }
+
+
+        // ========================================
+        // LOGIN THÀNH CÔNG
+        // ========================================
+
         localStorage.setItem(
-            "adminLoggedIn",
-            "true"
+            "adminToken",
+            data.token
         );
 
         localStorage.setItem(
             "adminEmail",
-            email
+            data.admin.email
+        );
+
+        localStorage.setItem(
+            "adminLoggedIn",
+            "true"
         );
 
 
@@ -80,13 +109,13 @@ function adminLogin() {
         window.location.href =
             "dashboard.html";
 
-    } else {
+    } catch (error) {
+
+        console.error(error);
 
         errorMessage.textContent =
-            "Email hoặc mật khẩu không chính xác.";
-
+            "Không thể kết nối tới server.";
     }
-
 }
 
 
@@ -114,9 +143,7 @@ document
                 password.type = "password";
 
                 this.textContent = "👁";
-
             }
-
         }
     );
 
@@ -134,8 +161,6 @@ document
             if (event.key === "Enter") {
 
                 adminLogin();
-
             }
-
         }
     );

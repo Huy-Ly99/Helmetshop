@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
+require("dotenv").config();
+
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const { v2: cloudinary } = require("cloudinary");
 const pool = require("./db");
@@ -41,8 +45,114 @@ const upload = multer({
 // =========================
 
 app.use(cors());
-
 app.use(express.json());
+app.post("/api/admin/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                message: "Vui lòng nhập email và mật khẩu."
+            });
+        }
+
+        // Kiểm tra email
+        if (email !== process.env.ADMIN_EMAIL) {
+            return res.status(401).json({
+                message: "Email hoặc mật khẩu không chính xác."
+            });
+        }
+
+        // Kiểm tra password bằng bcrypt
+        const passwordValid = await bcrypt.compare(
+            password,
+            process.env.ADMIN_PASSWORD_HASH
+        );
+
+        if (!passwordValid) {
+            return res.status(401).json({
+                message: "Email hoặc mật khẩu không chính xác."
+            });
+        }
+
+        // Tạo JWT
+        const token = jwt.sign(
+            {
+                email: email,
+                role: "admin"
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "2h"
+            }
+        );
+
+        res.json({
+            message: "Đăng nhập Admin thành công!",
+            token: token,
+            admin: {
+                email: email,
+                role: "admin"
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Lỗi server."
+        });
+    }
+});
+
+// ========================================
+// MIDDLEWARE KIỂM TRA ADMIN JWT
+// ========================================
+
+function requireAdmin(req, res, next) {
+
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({
+            message: "Bạn chưa đăng nhập."
+        });
+    }
+
+    const token = authHeader.startsWith("Bearer ")
+        ? authHeader.split(" ")[1]
+        : null;
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Token không hợp lệ."
+        });
+    }
+
+    try {
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET
+        );
+
+        if (decoded.role !== "admin") {
+            return res.status(403).json({
+                message: "Bạn không có quyền Admin."
+            });
+        }
+
+        req.admin = decoded;
+
+        next();
+
+    } catch (error) {
+
+        return res.status(401).json({
+            message: "Token hết hạn hoặc không hợp lệ."
+        });
+    }
+}   
 
 // =========================
 // TEST SERVER
@@ -114,6 +224,7 @@ app.get("/api/products", async (req, res) => {
 
 app.post(
     "/api/products",
+    requireAdmin,
     upload.single("image"),
     async (req, res) => {
 
@@ -171,6 +282,7 @@ app.post(
 
 app.put(
     "/api/products/:id",
+    requireAdmin,
     upload.single("image"),
     async (req, res) => {
 
@@ -371,7 +483,7 @@ app.put(
     }
 );
 
-app.delete("/api/products/:id", async (req, res) => {
+app.delete("/api/products/:id", requireAdmin, async (req, res) => {
 
     try {
 
