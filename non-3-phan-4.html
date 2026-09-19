@@ -50,16 +50,21 @@
             <!-- HEADER ACTION -->
             <div class="header-actions">
 
-                <a href="admin/login.html" class="header-link">
-                    👤
-                    <span>Tài khoản</span>
-                </a>
+                <a id="accountLink" href="admin/login.html">
+    👤
+    <span>Tài khoản</span>
+</a>
 
-                <a href="#" class="cart">
-                    🛒
-                    <span>Giỏ hàng</span>
-                    <b id="cartCount">0</b>
-                </a>
+<a id="logoutLink" href="#" style="display: none;">
+    🚪
+    <span>Đăng xuất</span>
+</a>
+
+<a id="cartLink" href="#" class="cart">
+    🛒
+    <span>Giỏ hàng</span>
+    <b id="cartCount">0</b>
+</a>
 
             </div>
 
@@ -481,7 +486,7 @@
 
 
     <script src="js/script.js"></script>
-
+    <script src="js/auth.js"></script>
 
 </body>
 

@@ -135,6 +135,9 @@ button {
     border-radius: 50%;
 }
 
+#logoutLink {
+    display: none;
+}
 
 /* NAVBAR */
 
