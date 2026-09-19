@@ -424,6 +424,11 @@
 
         const API_URL = "https://helmetshop-api.onrender.com";
 
+        const adminToken = localStorage.getItem("adminToken");
+
+        if (!adminToken) {
+        window.location.href = "login.html";
+        }
 
         // Hiển thị email admin
 
@@ -594,6 +599,9 @@
                             `${API_URL}/api/products`,
                             {
                                 method: "POST",
+                                 headers: {
+                                 Authorization: `Bearer ${adminToken}`
+                                },
                                 body: formData
                             }
                         );
@@ -657,8 +665,12 @@
         const response = await fetch(
             `${API_URL}/api/products/${id}`,
             {
-                method: "DELETE"
+                method: "DELETE",
+                 headers: {
+                 Authorization: `Bearer ${adminToken}`
+                },
             }
+            
         );
 
         const data = await response.json();
@@ -833,6 +845,9 @@ document
                     `${API_URL}/api/products/${id}`,
                     {
                         method: "PUT",
+                         headers: {
+                         Authorization: `Bearer ${adminToken}`
+                        },
                         body: formData
                     }
                 );
