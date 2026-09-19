@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (accountLink) {
             accountLink.textContent = "Admin";
-            accountLink.href = "dashboard.html";
+            accountLink.href = "admin/dashboard.html";
         }
 
         // Ẩn giỏ hàng nếu muốn Admin không sử dụng giỏ hàng
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.removeItem("adminLoggedIn");
 
                     window.location.href =
-                        "login.html";
+                        "admin/login.html";
                 }
             );
         }
