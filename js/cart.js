@@ -136,7 +136,7 @@ function renderCart() {
                     src="${item.image}"
                     alt="${item.name}"
                     class="cart-item-image"
-                    onerror="this.src='https://via.placeholder.com/100'"
+                    onerror="this.style.display='none'"
                 >
 
 
