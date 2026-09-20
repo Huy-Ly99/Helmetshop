@@ -85,7 +85,7 @@ function renderCart() {
                 </p>
 
                 <a
-                    href="products.html"
+                    href="index.html"
                     class="shopping-btn"
                 >
                     Tiếp tục mua sắm
@@ -272,7 +272,7 @@ function renderCart() {
 
 
                 <a
-                    href="products.html"
+                    href="index.html"
                     class="continue-btn"
                 >
                     ← Tiếp tục mua sắm

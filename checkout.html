@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Thông tin đặt hàng - HelmetHop</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="checkout-page">
+
+        <div class="checkout-container">
+
+            <h1>Thông tin đặt hàng</h1>
+
+            <p class="checkout-note">
+                Vui lòng nhập thông tin để chúng tôi liên hệ xác nhận đơn hàng.
+            </p>
+
+
+            <form id="checkoutForm">
+
+
+                <!-- HỌ TÊN -->
+
+                <div class="form-group">
+
+                    <label for="customerName">
+                        Họ và tên
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        name="customerName"
+                        placeholder="Nhập họ và tên"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- SỐ ĐIỆN THOẠI -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Nhập số điện thoại"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ĐỊA CHỈ -->
+
+                <div class="form-group">
+
+                    <label for="address">
+                        Địa chỉ nhận hàng
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="4"
+                        placeholder="Nhập địa chỉ nhận hàng"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- NÚT -->
+
+                <div class="checkout-actions">
+
+                    <a
+                        href="cart.html"
+                        class="back-cart-btn"
+                    >
+                        ← Quay lại giỏ hàng
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="confirm-order-btn"
+                    >
+                        Xác nhận đặt hàng
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <script>
+
+        document
+            .getElementById("checkoutForm")
+            .addEventListener("submit", function(event) {
+
+                event.preventDefault();
+
+
+                const customerName =
+                    document.getElementById("customerName").value.trim();
+
+                const phone =
+                    document.getElementById("phone").value.trim();
+
+                const address =
+                    document.getElementById("address").value.trim();
+
+
+                if (!customerName || !phone || !address) {
+
+                    alert("Vui lòng nhập đầy đủ thông tin.");
+
+                    return;
+                }
+
+
+                console.log("Khách hàng:", {
+                    customerName,
+                    phone,
+                    address
+                });
+
+
+                alert("Thông tin hợp lệ!");
+
+            });
+
+    </script>
+
+</body>
+
+</html>

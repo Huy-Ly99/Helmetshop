@@ -309,6 +309,291 @@ app.post("/api/admin/login", async (req, res) => {
 });
 
 // ========================================
+// CREATE ORDER
+// ========================================
+
+app.post("/api/orders", async (req, res) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        const {
+            customerName,
+            phone,
+            address,
+            cartToken
+        } = req.body;
+
+
+        // ========================================
+        // VALIDATE CUSTOMER
+        // ========================================
+
+        if (!customerName || !phone || !address) {
+
+            return res.status(400).json({
+                message: "Vui lòng nhập đầy đủ thông tin khách hàng."
+            });
+
+        }
+
+
+        // ========================================
+        // CHECK CART TOKEN
+        // ========================================
+
+        if (!cartToken) {
+
+            return res.status(400).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+
+        }
+
+
+        await client.query("BEGIN");
+
+
+        // ========================================
+        // LẤY GIỎ HÀNG
+        // ========================================
+
+        const cartResult = await client.query(
+            `
+            SELECT id
+            FROM public.carts
+            WHERE cart_token = $1
+            `,
+            [cartToken]
+        );
+
+
+        if (cartResult.rows.length === 0) {
+
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+
+        }
+
+
+        const cartId = cartResult.rows[0].id;
+
+
+        // ========================================
+        // LẤY SẢN PHẨM TRONG GIỎ
+        // ========================================
+
+        const cartItemsResult = await client.query(
+            `
+            SELECT
+                ci.product_id,
+                ci.quantity,
+                p.name,
+                p.price,
+                p.stock
+
+            FROM public.cart_items ci
+
+            JOIN public.products p
+                ON p.id = ci.product_id
+
+            WHERE ci.cart_id = $1
+            `,
+            [cartId]
+        );
+
+
+        if (cartItemsResult.rows.length === 0) {
+
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message: "Giỏ hàng đang trống."
+            });
+
+        }
+
+
+        // ========================================
+        // TÍNH TỔNG TIỀN
+        // ========================================
+
+        let totalAmount = 0;
+
+
+        for (const item of cartItemsResult.rows) {
+
+            if (item.quantity > item.stock) {
+
+                await client.query("ROLLBACK");
+
+                return res.status(400).json({
+                    message:
+                        `Sản phẩm "${item.name}" không đủ số lượng trong kho.`
+                });
+
+            }
+
+
+            const subtotal =
+                Number(item.price) *
+                Number(item.quantity);
+
+
+            totalAmount += subtotal;
+
+        }
+
+
+        // ========================================
+        // TẠO ORDER
+        // ========================================
+
+        const orderResult = await client.query(
+            `
+            INSERT INTO public.orders
+            (
+                customer_name,
+                phone,
+                address,
+                total_amount,
+                contact_status
+            )
+
+            VALUES
+            (
+                $1,
+                $2,
+                $3,
+                $4,
+                'PENDING'
+            )
+
+            RETURNING *
+            `,
+            [
+                customerName.trim(),
+                phone.trim(),
+                address.trim(),
+                totalAmount
+            ]
+        );
+
+
+        const order = orderResult.rows[0];
+
+
+        // ========================================
+        // TẠO ORDER ITEMS
+        // ========================================
+
+        for (const item of cartItemsResult.rows) {
+
+            const subtotal =
+                Number(item.price) *
+                Number(item.quantity);
+
+
+            await client.query(
+                `
+                INSERT INTO public.order_items
+                (
+                    order_id,
+                    product_id,
+                    product_name,
+                    price,
+                    quantity,
+                    subtotal
+                )
+
+                VALUES
+                (
+                    $1,
+                    $2,
+                    $3,
+                    $4,
+                    $5,
+                    $6
+                )
+                `,
+                [
+                    order.id,
+                    item.product_id,
+                    item.name,
+                    item.price,
+                    item.quantity,
+                    subtotal
+                ]
+            );
+
+        }
+
+
+        // ========================================
+        // XÓA GIỎ HÀNG
+        // ========================================
+
+        await client.query(
+            `
+            DELETE FROM public.cart_items
+            WHERE cart_id = $1
+            `,
+            [cartId]
+        );
+
+
+        await client.query("COMMIT");
+
+
+        // ========================================
+        // RESPONSE
+        // ========================================
+
+        res.status(201).json({
+
+            message: "Đặt hàng thành công!",
+
+            order: {
+                id: order.id,
+                customer_name: order.customer_name,
+                phone: order.phone,
+                address: order.address,
+                total_amount: order.total_amount,
+                contact_status: order.contact_status,
+                created_at: order.created_at
+            }
+
+        });
+
+
+    } catch (error) {
+
+        await client.query("ROLLBACK");
+
+        console.error("Create order error:", error);
+
+        res.status(500).json({
+
+            message: "Không thể tạo đơn hàng.",
+
+            error: error.message
+
+        });
+
+    } finally {
+
+        client.release();
+
+    }
+
+});
+
+
+// ========================================
 // MIDDLEWARE KIỂM TRA ADMIN JWT
 // ========================================
 

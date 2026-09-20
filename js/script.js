@@ -1,96 +1,304 @@
 let cartCount = 0;
 
 
+// =========================
+// API
+// =========================
+
+const API_URL = "https://helmetshop-api.onrender.com";
+
+
+// =========================
+// XEM CHI TIẾT SẢN PHẨM
+// =========================
+
 function viewProduct(productId) {
-    window.location.href = `product-detail.html?id=${productId}`;
+
+    window.location.href =
+        `product-detail.html?id=${productId}`;
+
 }
+
+
+// =========================
+// LẤY HOẶC TẠO CART TOKEN
+// =========================
+
+async function getOrCreateCartToken() {
+
+    // Kiểm tra token đã có chưa
+    let cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+
+    // Nếu đã có → dùng lại
+    if (cartToken) {
+
+        return cartToken;
+
+    }
+
+
+    // Nếu chưa có → tạo cart mới
+    const response =
+        await fetch(
+            `${API_URL}/api/cart`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Không thể tạo giỏ hàng."
+        );
+
+    }
+
+
+    // Lấy token server tạo
+    cartToken =
+        data.cart.cart_token;
+
+
+    // Lưu token
+    localStorage.setItem(
+        "helmetHopCartToken",
+        cartToken
+    );
+
+
+    return cartToken;
+
+}
+
 
 // =========================
 // THÊM VÀO GIỎ HÀNG
 // =========================
 
-function addToCart(button) {
+async function addToCart(button) {
 
-    // Lấy thẻ sản phẩm
-    const productCard = button.closest(".product-card");
+    // Lấy product card
+    const productCard =
+        button.closest(".product-card");
+
 
     if (!productCard) {
-        console.error("Không tìm thấy product-card");
+
+        console.error(
+            "Không tìm thấy product-card"
+        );
+
         return;
+
     }
 
 
     // Lấy thông tin sản phẩm
-    const product = {
-        id: productCard.dataset.id,
-        name: productCard.dataset.name,
-        price: Number(productCard.dataset.price),
-        image: productCard.dataset.image,
-        quantity: 1
-    };
+    const productId =
+        Number(productCard.dataset.id);
 
 
-    // Lấy giỏ hàng hiện tại
-    let cart =
-        JSON.parse(
-            localStorage.getItem("helmetHopCart")
-        ) || [];
+    const productName =
+        productCard.dataset.name;
 
 
-    // Kiểm tra sản phẩm đã tồn tại chưa
-    const existingProduct = cart.find(
-        item => item.id === product.id
-    );
+    if (!productId) {
 
+        console.error(
+            "Không tìm thấy productId"
+        );
 
-    if (existingProduct) {
-
-        existingProduct.quantity++;
-
-    } else {
-
-        cart.push(product);
+        return;
 
     }
 
 
-    // Lưu vào localStorage
-    localStorage.setItem(
-        "helmetHopCart",
-        JSON.stringify(cart)
-    );
+    try {
+
+        // ========================================
+        // LẤY CART TOKEN
+        // ========================================
+
+        const cartToken =
+            await getOrCreateCartToken();
 
 
-    // Cập nhật số lượng icon giỏ hàng
-    updateCartCount();
+        // ========================================
+        // THÊM SẢN PHẨM VÀO DATABASE
+        // ========================================
+
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/items`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        cartToken: cartToken,
+
+                        productId: productId,
+
+                        quantity: 1
+
+                    })
+                }
+            );
 
 
-    alert("Đã thêm sản phẩm vào giỏ hàng!");
+        const data =
+            await response.json();
+
+
+        // ========================================
+        // KIỂM TRA RESPONSE
+        // ========================================
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Không thể thêm sản phẩm vào giỏ hàng."
+            );
+
+        }
+
+
+        // ========================================
+        // CẬP NHẬT SỐ LƯỢNG CART
+        // ========================================
+
+        await updateCartCount();
+
+
+        // ========================================
+        // THÔNG BÁO
+        // ========================================
+
+        alert(
+            `Đã thêm "${productName}" vào giỏ hàng!`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Add to cart error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra khi thêm sản phẩm."
+        );
+
+    }
+
 }
 
-function updateCartCount() {
 
-    const cart =
-        JSON.parse(
-            localStorage.getItem("helmetHopCart")
-        ) || [];
+// =========================
+// CẬP NHẬT SỐ LƯỢNG GIỎ HÀNG
+// =========================
 
+async function updateCartCount() {
 
-    const totalQuantity = cart.reduce(
-        (total, item) =>
-            total + Number(item.quantity),
-        0
-    );
-
-
-    const cartCount =
+    const cartCountElement =
         document.getElementById("cartCount");
 
 
-    if (cartCount) {
-        cartCount.textContent = totalQuantity;
+    if (!cartCountElement) {
+
+        return;
+
     }
+
+
+    // Lấy cart token
+    const cartToken =
+        localStorage.getItem(
+            "helmetHopCartToken"
+        );
+
+
+    // Chưa có cart
+    if (!cartToken) {
+
+        cartCountElement.textContent = "0";
+
+        return;
+
+    }
+
+
+    try {
+
+        // Lấy cart từ Neon
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/${cartToken}`
+            );
+
+
+        if (!response.ok) {
+
+            cartCountElement.textContent = "0";
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        // Tính tổng số lượng
+        const totalQuantity =
+            data.items.reduce(
+                (total, item) => {
+
+                    return total +
+                        Number(item.quantity);
+
+                },
+                0
+            );
+
+
+        cartCountElement.textContent =
+            totalQuantity;
+
+
+    } catch (error) {
+
+        console.error(
+            "Update cart count error:",
+            error
+        );
+
+    }
+
 }
+
 
 // =========================
 // TÌM KIẾM
@@ -98,19 +306,29 @@ function updateCartCount() {
 
 function searchProduct() {
 
-    const keyword = document
-        .getElementById("searchInput")
-        .value
-        .trim();
+    const keyword =
+        document
+            .getElementById("searchInput")
+            .value
+            .trim();
+
 
     if (keyword === "") {
 
-        alert("Vui lòng nhập tên sản phẩm cần tìm!");
+        alert(
+            "Vui lòng nhập tên sản phẩm cần tìm!"
+        );
 
         return;
+
     }
 
-    alert("Bạn đang tìm kiếm: " + keyword);
+
+    alert(
+        "Bạn đang tìm kiếm: " +
+        keyword
+    );
+
 }
 
 
@@ -120,44 +338,57 @@ function searchProduct() {
 
 document
     .getElementById("searchInput")
-    .addEventListener("keypress", function(event) {
+    .addEventListener(
+        "keypress",
+        function(event) {
 
-        if (event.key === "Enter") {
+            if (event.key === "Enter") {
 
-            searchProduct();
+                searchProduct();
+
+            }
 
         }
-
-    });
+    );
 
 
 // =========================
 // HEART
 // =========================
 
-const hearts = document.querySelectorAll(".heart");
+const hearts =
+    document.querySelectorAll(".heart");
+
 
 hearts.forEach(function(heart) {
 
-    heart.addEventListener("click", function() {
+    heart.addEventListener(
+        "click",
+        function() {
 
-        if (heart.textContent === "♡") {
+            if (heart.textContent === "♡") {
 
-            heart.textContent = "♥";
+                heart.textContent = "♥";
 
-        } else {
+            } else {
 
-            heart.textContent = "♡";
+                heart.textContent = "♡";
+
+            }
 
         }
-
-    });
+    );
 
 });
 
+
+// =========================
+// LOAD TRANG
+// =========================
+
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
         updateCartCount();
 
