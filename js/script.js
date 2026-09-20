@@ -224,69 +224,54 @@ async function updateCartCount() {
     const cartCountElement =
         document.getElementById("cartCount");
 
-
     if (!cartCountElement) {
-
         return;
-
     }
 
-
-    // Lấy cart token
     const cartToken =
-        localStorage.getItem(
-            "helmetHopCartToken"
-        );
+        localStorage.getItem("helmetHopCartToken");
 
-
-    // Chưa có cart
     if (!cartToken) {
-
         cartCountElement.textContent = "0";
-
         return;
-
     }
-
 
     try {
 
-        // Lấy cart từ Neon
         const response =
             await fetch(
                 `${API_URL}/api/cart/${cartToken}`
             );
 
+        const data =
+            await response.json();
+
+        console.log("Cart API response:", data);
 
         if (!response.ok) {
 
             cartCountElement.textContent = "0";
 
             return;
-
         }
 
+        // Kiểm tra items có tồn tại không
+        const items =
+            Array.isArray(data.items)
+                ? data.items
+                : [];
 
-        const data =
-            await response.json();
-
-
-        // Tính tổng số lượng
         const totalQuantity =
-            data.items.reduce(
+            items.reduce(
                 (total, item) => {
-
                     return total +
-                        Number(item.quantity);
-
+                        Number(item.quantity || 0);
                 },
                 0
             );
 
-
         cartCountElement.textContent =
             totalQuantity;
-
 
     } catch (error) {
 
@@ -295,9 +280,11 @@ async function updateCartCount() {
             error
         );
 
+        cartCountElement.textContent = "0";
     }
 
 }
+
 
 
 // =========================
