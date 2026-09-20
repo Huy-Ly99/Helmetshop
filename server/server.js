@@ -182,6 +182,282 @@ app.post("/api/cart/items", async (req, res) => {
     }
 });
 
+// ========================================
+// CẬP NHẬT SỐ LƯỢNG CART ITEM
+// ========================================
+
+app.put("/api/cart/items/:id", async (req, res) => {
+
+    try {
+
+        const itemId = Number(req.params.id);
+
+        const { cartToken, quantity } = req.body;
+
+
+        if (!itemId || !cartToken || quantity === undefined) {
+
+            return res.status(400).json({
+                message: "Thiếu itemId, cartToken hoặc quantity."
+            });
+
+        }
+
+
+        const newQuantity = Number(quantity);
+
+
+        if (!Number.isInteger(newQuantity) || newQuantity < 1) {
+
+            return res.status(400).json({
+                message: "Số lượng phải là số nguyên lớn hơn 0."
+            });
+
+        }
+
+
+        // ========================================
+        // KIỂM TRA CART
+        // ========================================
+
+        const cartResult = await pool.query(
+            `
+            SELECT id
+            FROM public.carts
+            WHERE cart_token = $1
+            `,
+            [cartToken]
+        );
+
+
+        if (cartResult.rows.length === 0) {
+
+            return res.status(404).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+
+        }
+
+
+        const cartId = cartResult.rows[0].id;
+
+
+        // ========================================
+        // KIỂM TRA CART ITEM + STOCK
+        // ========================================
+
+        const itemResult = await pool.query(
+            `
+            SELECT
+                ci.id,
+                ci.product_id,
+                p.name,
+                p.stock
+            FROM public.cart_items ci
+
+            JOIN public.products p
+                ON p.id = ci.product_id
+
+            WHERE ci.id = $1
+              AND ci.cart_id = $2
+            `,
+            [itemId, cartId]
+        );
+
+
+        if (itemResult.rows.length === 0) {
+
+            return res.status(404).json({
+                message: "Không tìm thấy sản phẩm trong giỏ hàng."
+            });
+
+        }
+
+
+        const item = itemResult.rows[0];
+
+
+        // ========================================
+        // KIỂM TRA TỒN KHO
+        // ========================================
+
+        if (newQuantity > item.stock) {
+
+            return res.status(400).json({
+                message:
+                    `Sản phẩm "${item.name}" chỉ còn ${item.stock} cái.`
+            });
+
+        }
+
+
+        // ========================================
+        // UPDATE
+        // ========================================
+
+        const result = await pool.query(
+            `
+            UPDATE public.cart_items
+
+            SET
+                quantity = $1,
+                updated_at = CURRENT_TIMESTAMP
+
+            WHERE id = $2
+              AND cart_id = $3
+
+            RETURNING *
+            `,
+            [
+                newQuantity,
+                itemId,
+                cartId
+            ]
+        );
+
+
+        res.json({
+
+            message: "Cập nhật số lượng thành công!",
+
+            cartItem: result.rows[0]
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Update cart item error:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Không thể cập nhật số lượng.",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+});
+
+// ========================================
+// XÓA CART ITEM
+// ========================================
+
+app.delete("/api/cart/items/:id", async (req, res) => {
+
+    try {
+
+        const itemId = Number(req.params.id);
+
+        const { cartToken } = req.body;
+
+
+        if (!itemId || !cartToken) {
+
+            return res.status(400).json({
+                message: "Thiếu itemId hoặc cartToken."
+            });
+
+        }
+
+
+        // ========================================
+        // TÌM CART
+        // ========================================
+
+        const cartResult = await pool.query(
+            `
+            SELECT id
+            FROM public.carts
+            WHERE cart_token = $1
+            `,
+            [cartToken]
+        );
+
+
+        if (cartResult.rows.length === 0) {
+
+            return res.status(404).json({
+                message: "Không tìm thấy giỏ hàng."
+            });
+
+        }
+
+
+        const cartId = cartResult.rows[0].id;
+
+
+        // ========================================
+        // XÓA ITEM
+        // ========================================
+
+        const result = await pool.query(
+            `
+            DELETE FROM public.cart_items
+
+            WHERE id = $1
+              AND cart_id = $2
+
+            RETURNING *
+            `,
+            [
+                itemId,
+                cartId
+            ]
+        );
+
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message:
+                    "Không tìm thấy sản phẩm trong giỏ hàng."
+            });
+
+        }
+
+
+        res.json({
+
+            message:
+                "Đã xóa sản phẩm khỏi giỏ hàng!",
+
+            cartItem:
+                result.rows[0]
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Delete cart item error:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            message:
+                "Không thể xóa sản phẩm.",
+
+            error:
+                error.message
+
+        });
+
+    }
+
+});
+
 app.get("/api/cart/:cartToken", async (req, res) => {
     try {
         const { cartToken } = req.params;
