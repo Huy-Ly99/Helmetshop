@@ -340,7 +340,7 @@ async function renderCart() {
 
                     <button
                         class="checkout-btn"
-                        onclick="goToCheckout()"
+                        onclick="openCheckoutModal()"
                     >
                         Tiến hành thanh toán
                     </button>
@@ -629,3 +629,32 @@ document.addEventListener(
 
     }
 );
+
+function openCheckoutModal() {
+
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+    if (!cartToken) {
+        alert("Giỏ hàng đang trống!");
+        return;
+    }
+
+    const modal =
+        document.getElementById("checkoutModal");
+
+    if (modal) {
+        modal.classList.add("show");
+    }
+}
+
+
+function closeCheckoutModal() {
+
+    const modal =
+        document.getElementById("checkoutModal");
+
+    if (modal) {
+        modal.classList.remove("show");
+    }
+}
