@@ -2,38 +2,17 @@
 // HELMET HOP - CART
 // ========================================
 
-// Lấy giỏ hàng từ localStorage
-function getCart() {
-
-    const cart = localStorage.getItem("helmetHopCart");
-
-    if (!cart) {
-        return [];
-    }
-
-    try {
-        return JSON.parse(cart);
-    } catch (error) {
-        console.error("Cart data bị lỗi:", error);
-        return [];
-    }
-}
+const API_URL = "https://helmetshop-api.onrender.com";
 
 
-// Lưu giỏ hàng
-function saveCart(cart) {
+// ========================================
+// FORMAT TIỀN VIỆT NAM
+// ========================================
 
-    localStorage.setItem(
-        "helmetHopCart",
-        JSON.stringify(cart)
-    );
-}
-
-
-// Format tiền Việt Nam
 function formatPrice(price) {
 
     return Number(price).toLocaleString("vi-VN") + " ₫";
+
 }
 
 
@@ -41,9 +20,7 @@ function formatPrice(price) {
 // HIỂN THỊ GIỎ HÀNG
 // ========================================
 
-function renderCart() {
-
-    const cart = getCart();
+async function renderCart() {
 
     const cartContent =
         document.getElementById("cartContent");
@@ -52,36 +29,355 @@ function renderCart() {
         document.getElementById("cartCount");
 
 
-    // Tổng số sản phẩm
-    const totalQuantity = cart.reduce(
-        (total, item) => total + Number(item.quantity),
-        0
-    );
-
-
-    if (cartCount) {
-        cartCount.textContent = totalQuantity;
+    if (!cartContent) {
+        return;
     }
 
 
     // ========================================
-    // GIỎ HÀNG TRỐNG
+    // LẤY CART TOKEN
     // ========================================
 
-    if (cart.length === 0) {
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+
+    // Chưa có giỏ hàng
+    if (!cartToken) {
+
+        if (cartCount) {
+            cartCount.textContent = "0";
+        }
+
+        showEmptyCart();
+
+        return;
+    }
+
+
+    try {
+
+        // ========================================
+        // GỌI API LẤY GIỎ HÀNG
+        // ========================================
+
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/${cartToken}`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Cart API response:",
+            data
+        );
+
+
+        // ========================================
+        // API ERROR
+        // ========================================
+
+        if (!response.ok) {
+
+            if (cartCount) {
+                cartCount.textContent = "0";
+            }
+
+            showEmptyCart();
+
+            return;
+        }
+
+
+        // ========================================
+        // LẤY ITEMS
+        // ========================================
+
+        const items =
+            Array.isArray(data.cart?.items)
+                ? data.cart.items
+                : [];
+
+
+        // ========================================
+        // TỔNG SỐ LƯỢNG
+        // ========================================
+
+        const totalQuantity =
+            items.reduce(
+                (total, item) => {
+
+                    return total +
+                        Number(item.quantity || 0);
+
+                },
+                0
+            );
+
+
+        if (cartCount) {
+
+            cartCount.textContent =
+                totalQuantity;
+
+        }
+
+
+        // ========================================
+        // GIỎ HÀNG TRỐNG
+        // ========================================
+
+        if (items.length === 0) {
+
+            showEmptyCart();
+
+            return;
+        }
+
+
+        // ========================================
+        // TỔNG TIỀN
+        // ========================================
+
+        const total =
+            Number(data.cart.total || 0);
+
+
+        // ========================================
+        // HIỂN THỊ SẢN PHẨM
+        // ========================================
+
+        let productsHTML = "";
+
+
+        items.forEach(function (item) {
+
+            const itemTotal =
+                Number(item.price) *
+                Number(item.quantity);
+
+
+            let imageHTML;
+
+
+            // Có ảnh
+            if (item.image) {
+
+                imageHTML = `
+
+                    <img
+                        src="${item.image}"
+                        alt="${item.name}"
+                        class="cart-item-image"
+                        onerror="this.style.display='none'"
+                    >
+
+                `;
+
+            }
+
+            // Không có ảnh
+            else {
+
+                imageHTML = `
+
+                    <div class="cart-item-image">
+                        🪖
+                    </div>
+
+                `;
+
+            }
+
+
+            productsHTML += `
+
+                <div class="cart-item">
+
+
+                    ${imageHTML}
+
+
+                    <div>
+
+                        <div class="cart-item-name">
+                            ${item.name}
+                        </div>
+
+
+                        <div class="cart-item-price">
+                            ${formatPrice(item.price)}
+                        </div>
+
+
+                        <div class="quantity-box">
+
+                            <button
+                                class="quantity-btn"
+                                onclick="changeQuantity(
+                                    ${item.id},
+                                    -1
+                                )"
+                            >
+                                −
+                            </button>
+
+
+                            <div class="quantity-value">
+                                ${item.quantity}
+                            </div>
+
+
+                            <button
+                                class="quantity-btn"
+                                onclick="changeQuantity(
+                                    ${item.id},
+                                    1
+                                )"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="cart-item-right">
+
+
+                        <div class="item-total">
+                            ${formatPrice(itemTotal)}
+                        </div>
+
+
+                        <button
+                            class="remove-btn"
+                            onclick="removeFromCart(${item.id})"
+                        >
+                            🗑 Xóa
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+        });
+
+
+        // ========================================
+        // HTML GIỎ HÀNG
+        // ========================================
+
+        cartContent.innerHTML = `
+
+            <div class="cart-layout">
+
+
+                <div class="cart-products">
+
+                    ${productsHTML}
+
+                </div>
+
+
+                <div class="cart-summary">
+
+
+                    <h2>
+                        Tóm tắt đơn hàng
+                    </h2>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Tạm tính
+                        </span>
+
+                        <span>
+                            ${formatPrice(total)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Phí vận chuyển
+                        </span>
+
+                        <span>
+                            Miễn phí
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row summary-total">
+
+                        <span>
+                            Tổng cộng
+                        </span>
+
+                        <span>
+                            ${formatPrice(total)}
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="checkout-btn"
+                        onclick="goToCheckout()"
+                    >
+                        Tiến hành thanh toán
+                    </button>
+
+
+                    <a
+                        href="index.html"
+                        class="continue-btn"
+                    >
+                        ← Tiếp tục mua sắm
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+        `;
+
+
+    } catch (error) {
+
+        console.error(
+            "Load cart error:",
+            error
+        );
+
 
         cartContent.innerHTML = `
 
             <div class="empty-cart">
 
-                <div class="empty-cart-icon">
-                    🛒
-                </div>
-
-                <h2>Giỏ hàng đang trống</h2>
+                <h2>
+                    Không thể tải giỏ hàng
+                </h2>
 
                 <p>
-                    Bạn chưa có sản phẩm nào trong giỏ hàng.
+                    Vui lòng thử lại sau.
                 </p>
 
                 <a
@@ -95,194 +391,53 @@ function renderCart() {
 
         `;
 
+    }
+
+}
+
+
+// ========================================
+// GIỎ HÀNG TRỐNG
+// ========================================
+
+function showEmptyCart() {
+
+    const cartContent =
+        document.getElementById("cartContent");
+
+
+    if (!cartContent) {
         return;
     }
 
 
-    // ========================================
-    // TÍNH TỔNG TIỀN
-    // ========================================
-
-    let subtotal = 0;
-
-    cart.forEach(item => {
-
-        subtotal +=
-            Number(item.price) *
-            Number(item.quantity);
-
-    });
-
-
-    // ========================================
-    // DANH SÁCH SẢN PHẨM
-    // ========================================
-
-    let productsHTML = "";
-
-
-    cart.forEach((item, index) => {
-
-        const itemTotal =
-            Number(item.price) *
-            Number(item.quantity);
-
-
-        productsHTML += `
-
-            <div class="cart-item">
-
-                <img
-                    src="${item.image}"
-                    alt="${item.name}"
-                    class="cart-item-image"
-                    onerror="this.src='https://via.placeholder.com/100'"
-                >
-
-
-                <div>
-
-                    <div class="cart-item-name">
-                        ${item.name}
-                    </div>
-
-                    <div class="cart-item-price">
-                        ${formatPrice(item.price)}
-                    </div>
-
-
-                    <div class="quantity-box">
-
-                        <button
-                            class="quantity-btn"
-                            onclick="changeQuantity(${index}, -1)"
-                        >
-                            −
-                        </button>
-
-
-                        <div class="quantity-value">
-                            ${item.quantity}
-                        </div>
-
-
-                        <button
-                            class="quantity-btn"
-                            onclick="changeQuantity(${index}, 1)"
-                        >
-                            +
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="cart-item-right">
-
-                    <div class="item-total">
-                        ${formatPrice(itemTotal)}
-                    </div>
-
-
-                    <button
-                        class="remove-btn"
-                        onclick="removeFromCart(${index})"
-                    >
-                        🗑 Xóa
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-
-    });
-
-
-    // ========================================
-    // HTML GIỎ HÀNG
-    // ========================================
-
     cartContent.innerHTML = `
 
-        <div class="cart-layout">
+        <div class="empty-cart">
 
-
-            <div class="cart-products">
-
-                ${productsHTML}
-
+            <div class="empty-cart-icon">
+                🛒
             </div>
 
+            <h2>
+                Giỏ hàng đang trống
+            </h2>
 
-            <div class="cart-summary">
+            <p>
+                Bạn chưa có sản phẩm nào trong giỏ hàng.
+            </p>
 
-                <h2>
-                    Tóm tắt đơn hàng
-                </h2>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Tạm tính
-                    </span>
-
-                    <span>
-                        ${formatPrice(subtotal)}
-                    </span>
-
-                </div>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Phí vận chuyển
-                    </span>
-
-                    <span>
-                        Miễn phí
-                    </span>
-
-                </div>
-
-
-                <div class="summary-row summary-total">
-
-                    <span>
-                        Tổng cộng
-                    </span>
-
-                    <span>
-                        ${formatPrice(subtotal)}
-                    </span>
-
-                </div>
-
-
-                <button
-                    class="checkout-btn"
-                    onclick="goToCheckout()"
-                >
-                    Tiến hành thanh toán
-                </button>
-
-
-                <a
-                    href="index.html"
-                    class="continue-btn"
-                >
-                    ← Tiếp tục mua sắm
-                </a>
-
-            </div>
+            <a
+                href="index.html"
+                class="shopping-btn"
+            >
+                Tiếp tục mua sắm
+            </a>
 
         </div>
 
     `;
+
 }
 
 
@@ -290,30 +445,12 @@ function renderCart() {
 // TĂNG / GIẢM SỐ LƯỢNG
 // ========================================
 
-function changeQuantity(index, amount) {
+function changeQuantity(itemId, amount) {
 
-    const cart = getCart();
+    alert(
+        "Chức năng thay đổi số lượng sẽ được kết nối với API ở bước tiếp theo."
+    );
 
-    if (!cart[index]) {
-        return;
-    }
-
-
-    cart[index].quantity =
-        Number(cart[index].quantity) + amount;
-
-
-    // Không cho số lượng < 1
-    if (cart[index].quantity <= 0) {
-
-        cart.splice(index, 1);
-
-    }
-
-
-    saveCart(cart);
-
-    renderCart();
 }
 
 
@@ -321,20 +458,11 @@ function changeQuantity(index, amount) {
 // XÓA SẢN PHẨM
 // ========================================
 
-function removeFromCart(index) {
+function removeFromCart(itemId) {
 
-    const cart = getCart();
-
-    if (!cart[index]) {
-        return;
-    }
-
-
-    cart.splice(index, 1);
-
-    saveCart(cart);
-
-    renderCart();
+    alert(
+        "Chức năng xóa sản phẩm sẽ được kết nối với API ở bước tiếp theo."
+    );
 
 }
 
@@ -345,18 +473,24 @@ function removeFromCart(index) {
 
 function goToCheckout() {
 
-    const cart = getCart();
+    const cartToken =
+        localStorage.getItem(
+            "helmetHopCartToken"
+        );
 
 
-    if (cart.length === 0) {
+    if (!cartToken) {
 
-        alert("Giỏ hàng đang trống!");
+        alert(
+            "Giỏ hàng đang trống!"
+        );
 
         return;
     }
 
 
-    window.location.href = "checkout.html";
+    window.location.href =
+        "checkout.html";
 
 }
 
