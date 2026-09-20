@@ -209,17 +209,58 @@
             border-radius: 6px;
         }
 
-        
-            .checkout-modal {
+
+@media (max-width: 768px) {
+
+    .cart-container {
+        margin: 20px auto;
+        padding: 0 12px;
+    }
+
+    .cart-title {
+        font-size: 24px;
+    }
+
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-item {
+        grid-template-columns: 80px 1fr;
+        gap: 12px;
+    }
+
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .cart-item-right {
+        grid-column: 2;
+    }
+
+    .item-total {
+        text-align: left;
+    }
+}
+
+/* ========================================
+   CHECKOUT MODAL
+======================================== */
+
+.checkout-modal {
     display: none;
     position: fixed;
     inset: 0;
+
     background: rgba(0, 0, 0, 0.5);
+
     z-index: 9999;
 
     align-items: center;
     justify-content: center;
 }
+
 .checkout-modal.show {
     display: flex;
 }
@@ -227,15 +268,20 @@
 .checkout-box {
     width: 90%;
     max-width: 480px;
+
     background: white;
+
     border-radius: 12px;
+
     padding: 30px;
+
     position: relative;
 
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .checkout-box h2 {
+    margin-top: 0;
     margin-bottom: 8px;
     font-size: 24px;
 }
@@ -243,12 +289,15 @@
 .checkout-description {
     color: #777;
     font-size: 14px;
+
     margin-bottom: 25px;
+
     line-height: 1.5;
 }
 
 .checkout-close {
     position: absolute;
+
     top: 12px;
     right: 15px;
 
@@ -256,6 +305,9 @@
     height: 32px;
 
     background: none;
+
+    border: none;
+
     font-size: 28px;
     color: #777;
 
@@ -272,14 +324,17 @@
 
 .form-group label {
     display: block;
+
     font-size: 14px;
     font-weight: 600;
+
     margin-bottom: 7px;
 }
 
 .form-group input,
 .form-group textarea {
     width: 100%;
+
     padding: 12px;
 
     border: 1px solid #ddd;
@@ -302,6 +357,7 @@
 
 .confirm-order-btn {
     width: 100%;
+
     padding: 14px;
 
     background: #e63946;
@@ -320,40 +376,6 @@
     background: #c92e3b;
 }
 
-@media (max-width: 768px) {
-
-            .cart-container {
-                margin: 20px auto;
-                padding: 0 12px;
-            }
-
-            .cart-title {
-                font-size: 24px;
-            }
-
-            .cart-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .cart-item {
-                grid-template-columns: 80px 1fr;
-                gap: 12px;
-            }
-
-            .cart-item-image {
-                width: 80px;
-                height: 80px;
-            }
-
-            .cart-item-right {
-                grid-column: 2;
-            }
-
-            .item-total {
-                text-align: left;
-            }
-        }
-
     </style>
 </head>
 
@@ -361,9 +383,6 @@
 
 <body>
 
-    <!-- Nếu website của bạn đã có header,
-         giữ header hiện tại và bỏ phần này -->
-         
     <header style="
         background:#111;
         padding:18px 30px;
@@ -395,74 +414,85 @@
     </main>
 
 
-    <script src="js/cart.js"></script>
-    <script src="js/script.js"></script>
-
     <!-- CHECKOUT MODAL -->
-<div id="checkoutModal" class="checkout-modal">
+    <div id="checkoutModal" class="checkout-modal">
 
-    <div class="checkout-box">
+        <div class="checkout-box">
 
-        <button class="checkout-close"
+            <button
+                class="checkout-close"
                 onclick="closeCheckoutModal()">
-            ×
-        </button>
+                ×
+            </button>
 
-        <h2>Thông tin đặt hàng</h2>
+            <h2>Thông tin đặt hàng</h2>
 
-        <p class="checkout-description">
-            Vui lòng nhập thông tin để chúng tôi liên hệ xác nhận đơn hàng.
-        </p>
+            <p class="checkout-description">
+                Vui lòng nhập thông tin để chúng tôi liên hệ xác nhận đơn hàng.
+            </p>
 
-        <div class="checkout-form">
+            <div class="checkout-form">
 
-            <div class="form-group">
-                <label for="customerName">
-                    Họ và tên
-                </label>
+                <div class="form-group">
 
-                <input
-                    type="text"
-                    id="customerName"
-                    placeholder="Nhập họ và tên"
-                >
+                    <label for="customerName">
+                        Họ và tên
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Nhập họ và tên"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customerPhone">
+                        Số điện thoại
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="customerPhone"
+                        placeholder="Nhập số điện thoại"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="customerAddress">
+                        Địa chỉ giao hàng
+                    </label>
+
+                    <textarea
+                        id="customerAddress"
+                        placeholder="Nhập địa chỉ giao hàng"
+                        rows="3"
+                    ></textarea>
+
+                </div>
+
             </div>
 
-            <div class="form-group">
-                <label for="customerPhone">
-                    Số điện thoại
-                </label>
 
-                <input
-                    type="tel"
-                    id="customerPhone"
-                    placeholder="Nhập số điện thoại"
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="customerAddress">
-                    Địa chỉ giao hàng
-                </label>
-
-                <textarea
-                    id="customerAddress"
-                    placeholder="Nhập địa chỉ giao hàng"
-                    rows="3"
-                ></textarea>
-            </div>
+            <button
+                class="confirm-order-btn"
+                onclick="submitOrder()">
+                Xác nhận đặt hàng
+            </button>
 
         </div>
 
-        <button class="confirm-order-btn"
-                onclick="submitOrder()">
-            Xác nhận đặt hàng
-        </button>
-
     </div>
 
-</div>
 
+    <script src="js/cart.js"></script>
+    <script src="js/script.js"></script>
 
 </body>
 </html>
