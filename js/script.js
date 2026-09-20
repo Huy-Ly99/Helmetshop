@@ -151,9 +151,7 @@ async function updateCartCount() {
     }
 
     const cartToken =
-        localStorage.getItem(
-            "helmetHopCartToken"
-        );
+        localStorage.getItem("helmetHopCartToken");
 
     if (!cartToken) {
         cartCountElement.textContent = "0";
@@ -170,19 +168,17 @@ async function updateCartCount() {
         const data =
             await response.json();
 
-        console.log(
-            "Cart API response:",
-            data
-        );
+        console.log("Cart API response:", data);
 
         if (!response.ok) {
             cartCountElement.textContent = "0";
             return;
         }
 
+        // Lấy items từ cart
         const items =
-            Array.isArray(data.items)
-                ? data.items
+            Array.isArray(data.cart?.items)
+                ? data.cart.items
                 : [];
 
         const totalQuantity =
