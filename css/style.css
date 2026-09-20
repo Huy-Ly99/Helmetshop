@@ -431,7 +431,7 @@ button {
     border-radius: 8px;
     overflow: hidden;
     transition: 0.3s;
-    cursor: pointer,
+    cursor: pointer;
 }
 
 .product-card:hover {
