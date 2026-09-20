@@ -196,7 +196,9 @@ async function renderCart() {
 
             productsHTML += `
 
-                <div class="cart-item">
+                <div class="cart-item"
+     data-item-id="${item.id}"
+     data-price="${item.price}">
 
 
                     ${imageHTML}
@@ -446,178 +448,132 @@ async function changeQuantity(itemId, amount) {
     const cartToken =
         localStorage.getItem("helmetHopCartToken");
 
-    if (!cartToken) {
+    if (!cartToken) return;
+
+    // Tìm item đang hiển thị trên giao diện
+    const itemElement =
+        document.querySelector(
+            `.cart-item[data-item-id="${itemId}"]`
+        );
+
+    if (!itemElement) return;
+
+    const quantityElement =
+        itemElement.querySelector(".quantity-value");
+
+    const currentQuantity =
+        Number(quantityElement.textContent);
+
+    const newQuantity =
+        currentQuantity + amount;
+
+    // Không cho nhỏ hơn 1
+    if (newQuantity < 1) {
         return;
     }
 
+    // Cập nhật giao diện ngay lập tức
+    quantityElement.textContent = newQuantity;
 
-    // Lấy cart hiện tại
     try {
 
-        const response =
-            await fetch(
-                `${API_URL}/api/cart/${cartToken}`
-            );
+        const response = await fetch(
+            `${API_URL}/api/cart/items/${itemId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cartToken: cartToken,
+                    quantity: newQuantity
+                })
+            }
+        );
 
-        const data =
-            await response.json();
-
+        const data = await response.json();
 
         if (!response.ok) {
+            // Nếu API báo lỗi thì quay lại số cũ
+            quantityElement.textContent =
+                currentQuantity;
+
             throw new Error(
                 data.message ||
-                "Không thể lấy giỏ hàng."
-            );
-        }
-
-
-        const item =
-            data.cart.items.find(
-                item => Number(item.id) === Number(itemId)
-            );
-
-
-        if (!item) {
-            return;
-        }
-
-
-        const newQuantity =
-            Number(item.quantity) + Number(amount);
-
-
-        // Nếu giảm về 0 thì xóa
-        if (newQuantity <= 0) {
-
-            await removeFromCart(itemId);
-
-            return;
-        }
-
-
-        const updateResponse =
-            await fetch(
-                `${API_URL}/api/cart/items/${itemId}`,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        cartToken:
-                            cartToken,
-
-                        quantity:
-                            newQuantity
-
-                    })
-                }
-            );
-
-
-        const updateData =
-            await updateResponse.json();
-
-
-        if (!updateResponse.ok) {
-
-            throw new Error(
-                updateData.message ||
                 "Không thể cập nhật số lượng."
             );
-
         }
 
+        // Tính lại tiền của item
+        const price =
+            Number(itemElement.dataset.price);
 
-        // Load lại cart từ database
-        await renderCart();
+        const itemTotal =
+            price * newQuantity;
 
+        const itemTotalElement =
+            itemElement.querySelector(".item-total");
 
-    } catch (error) {
-
-        console.error(
-            "Change quantity error:",
-            error
-        );
-
-        alert(
-            error.message ||
-            "Có lỗi xảy ra."
-        );
-
-    }
-
-}
-
-async function removeFromCart(itemId) {
-
-    const cartToken =
-        localStorage.getItem("helmetHopCartToken");
-
-    if (!cartToken) {
-        return;
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                `${API_URL}/api/cart/items/${itemId}`,
-                {
-                    method: "DELETE",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        cartToken:
-                            cartToken
-
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.message ||
-                "Không thể xóa sản phẩm."
-            );
-
+        if (itemTotalElement) {
+            itemTotalElement.textContent =
+                formatPrice(itemTotal);
         }
 
+        // Cập nhật tổng tiền trên trang
+        function updateCartSummary() {
 
-        // Load lại cart từ database
-        await renderCart();
+    const items =
+        document.querySelectorAll(".cart-item");
 
+    let total = 0;
 
-    } catch (error) {
+    items.forEach(function(item) {
 
-        console.error(
-            "Remove cart item error:",
-            error
+        const price =
+            Number(item.dataset.price);
+
+        const quantity =
+            Number(
+                item.querySelector(
+                    ".quantity-value"
+                ).textContent
+            );
+
+        total += price * quantity;
+    });
+
+    const summaryRows =
+        document.querySelectorAll(
+            ".summary-row span:last-child"
         );
 
-        alert(
-            error.message ||
-            "Có lỗi xảy ra khi xóa sản phẩm."
-        );
-
+    // Tạm tính
+    if (summaryRows[0]) {
+        summaryRows[0].textContent =
+            formatPrice(total);
     }
 
+    // Tổng cộng
+    if (summaryRows[2]) {
+        summaryRows[2].textContent =
+            formatPrice(total);
+    }
 }
 
+        // Cập nhật số lượng icon giỏ hàng
+        function updateCartCountFast(amount) {
+
+    const cartCount =
+        document.getElementById("cartCount");
+
+    if (!cartCount) return;
+
+    const current =
+        Number(cartCount.textContent || 0);
+
+    cartCount.textContent =
+        current + amount;
+}
 
 // ========================================
 // THANH TOÁN
