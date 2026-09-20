@@ -1,7 +1,7 @@
 // ========================================
 // HELMET HOP - CART
 // ========================================
-
+const API_URL = "https://helmetshop-api.onrender.com";
 // Lấy giỏ hàng từ localStorage
 function getCart() {
 
