@@ -1,6 +1,10 @@
 let cartCount = 0;
 
 
+function viewProduct(productId) {
+    window.location.href = `product-detail.html?id=${productId}`;
+}
+
 // =========================
 // THÊM VÀO GIỎ HÀNG
 // =========================

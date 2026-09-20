@@ -460,7 +460,7 @@
 
                 const productCard = `
 
-                    <div class="product-card">
+                    <div class="product-card" onclick="viewProduct(${product.id})">
 
                         data-id="${product.id}"
          data-name="${product.name}"
@@ -509,7 +509,7 @@
 
                                 <button
                                     class="add-cart"
-                                    onclick="addToCart(this)"
+                                    onclick="event.stopPropagation(); addToCart(this)"
                                 >
                                     +
                                 </button>

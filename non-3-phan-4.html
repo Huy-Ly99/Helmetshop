@@ -371,7 +371,7 @@
 
                         const productCard = `
 
-                            <div class="product-card">
+                            <div class="product-card" onclick="viewProduct(${product.id})">
 
 
                                 <div class="product-image">
@@ -432,7 +432,7 @@
 
                                         <button
                                             class="add-cart"
-                                            onclick="addToCart()">
+                                            onclick="event.stopPropagation(); addToCart(this)">
 
                                             +
 
