@@ -275,7 +275,7 @@
 <script>
 
         const API_URL =
-            "https://helmetshop-986y.onrender.com";
+            "https://helmetshop-api.onrender.com";
 
         let product = null;
         let quantity = 1;
@@ -433,27 +433,167 @@
 
 
         // =========================
-        // ADD CART
-        // =========================
+// LẤY HOẶC TẠO CART TOKEN
+// =========================
 
-        function addProductToCart() {
+async function getOrCreateCartToken() {
 
-            console.log(
-                "Product:",
-                product
+    let cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+    if (cartToken) {
+        return cartToken;
+    }
+
+    const response = await fetch(
+        `${API_URL}/api/cart`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message || "Không thể tạo giỏ hàng."
+        );
+    }
+
+    cartToken = data.cart.cart_token;
+
+    localStorage.setItem(
+        "helmetHopCartToken",
+        cartToken
+    );
+
+    return cartToken;
+}
+
+
+// =========================
+// THÊM SẢN PHẨM VÀO GIỎ
+// =========================
+
+async function addProductToCart() {
+
+    if (!product) {
+        alert("Chưa tải được thông tin sản phẩm.");
+        return;
+    }
+
+    try {
+
+        const cartToken =
+            await getOrCreateCartToken();
+
+        const response = await fetch(
+            `${API_URL}/api/cart/items`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    cartToken: cartToken,
+                    productId: Number(product.id),
+                    quantity: quantity
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.message ||
+                "Không thể thêm sản phẩm vào giỏ hàng."
             );
-
-            console.log(
-                "Quantity:",
-                quantity
-            );
-
-            alert(
-                `Đã chọn ${quantity} sản phẩm!`
-            );
-
         }
 
+        // Cập nhật số lượng trên icon giỏ hàng
+        await updateCartCount();
+
+        alert(
+            `Đã thêm ${quantity} "${product.name}" vào giỏ hàng!`
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Add product to cart error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra khi thêm sản phẩm."
+        );
+    }
+}
+
+// =========================
+// CẬP NHẬT CART COUNT
+// =========================
+
+async function updateCartCount() {
+
+    const cartCount =
+        document.getElementById("cartCount");
+
+    if (!cartCount) return;
+
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+    if (!cartToken) {
+        cartCount.textContent = "0";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/cart/${cartToken}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            cartCount.textContent = "0";
+            return;
+        }
+
+        const items =
+            Array.isArray(data.cart?.items)
+                ? data.cart.items
+                : [];
+
+        const totalQuantity =
+            items.reduce(
+                (total, item) =>
+                    total + Number(item.quantity || 0),
+                0
+            );
+
+        cartCount.textContent =
+            totalQuantity;
+
+    } catch (error) {
+
+        console.error(
+            "Update cart count error:",
+            error
+        );
+
+        cartCount.textContent = "0";
+    }
+}
 
         // =========================
         // ERROR
