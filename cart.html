@@ -209,39 +209,7 @@
             border-radius: 6px;
         }
 
-        @media (max-width: 768px) {
-
-            .cart-container {
-                margin: 20px auto;
-                padding: 0 12px;
-            }
-
-            .cart-title {
-                font-size: 24px;
-            }
-
-            .cart-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .cart-item {
-                grid-template-columns: 80px 1fr;
-                gap: 12px;
-            }
-
-            .cart-item-image {
-                width: 80px;
-                height: 80px;
-            }
-
-            .cart-item-right {
-                grid-column: 2;
-            }
-
-            .item-total {
-                text-align: left;
-            }
-
+        
             .checkout-modal {
     display: none;
     position: fixed;
@@ -252,7 +220,6 @@
     align-items: center;
     justify-content: center;
 }
-
 .checkout-modal.show {
     display: flex;
 }
@@ -352,11 +319,86 @@
 .confirm-order-btn:hover {
     background: #c92e3b;
 }
+
+@media (max-width: 768px) {
+
+            .cart-container {
+                margin: 20px auto;
+                padding: 0 12px;
+            }
+
+            .cart-title {
+                font-size: 24px;
+            }
+
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 12px;
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            .cart-item-right {
+                grid-column: 2;
+            }
+
+            .item-total {
+                text-align: left;
+            }
         }
+
     </style>
 </head>
 
-<!-- CHECKOUT MODAL -->
+
+
+<body>
+
+    <!-- Nếu website của bạn đã có header,
+         giữ header hiện tại và bỏ phần này -->
+         
+    <header style="
+        background:#111;
+        padding:18px 30px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    ">
+        <a href="index.html"
+           style="color:white;text-decoration:none;font-size:24px;font-weight:bold;">
+            HelmetHop
+        </a>
+
+        <a href="cart.html"
+           style="color:white;text-decoration:none;">
+            🛒 Giỏ hàng
+            <span id="cartCount">0</span>
+        </a>
+    </header>
+
+
+    <main class="cart-container">
+
+        <h1 class="cart-title">
+            Giỏ hàng của bạn
+        </h1>
+
+        <div id="cartContent"></div>
+
+    </main>
+
+
+    <script src="js/cart.js"></script>
+    <script src="js/script.js"></script>
+
+    <!-- CHECKOUT MODAL -->
 <div id="checkoutModal" class="checkout-modal">
 
     <div class="checkout-box">
@@ -421,43 +463,6 @@
 
 </div>
 
-<body>
 
-    <!-- Nếu website của bạn đã có header,
-         giữ header hiện tại và bỏ phần này -->
-         
-    <header style="
-        background:#111;
-        padding:18px 30px;
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-    ">
-        <a href="index.html"
-           style="color:white;text-decoration:none;font-size:24px;font-weight:bold;">
-            HelmetHop
-        </a>
-
-        <a href="cart.html"
-           style="color:white;text-decoration:none;">
-            🛒 Giỏ hàng
-            <span id="cartCount">0</span>
-        </a>
-    </header>
-
-
-    <main class="cart-container">
-
-        <h1 class="cart-title">
-            Giỏ hàng của bạn
-        </h1>
-
-        <div id="cartContent"></div>
-
-    </main>
-
-
-    <script src="js/cart.js"></script>
-    <script src="js/script.js"></script>
 </body>
 </html>

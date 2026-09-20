@@ -625,6 +625,8 @@ function updateCartCountFast(amount) {
         current + amount;
 }
 
+
+
 // ========================================
 // THANH TOÁN
 // ========================================
