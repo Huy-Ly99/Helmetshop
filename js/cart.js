@@ -575,6 +575,20 @@ async function changeQuantity(itemId, amount) {
         current + amount;
 }
 
+    } catch (error) {
+
+        console.error(
+            "Change quantity error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra."
+        );
+    }
+}
+
 // ========================================
 // THANH TOÁN
 // ========================================
