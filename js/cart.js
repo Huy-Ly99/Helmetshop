@@ -441,28 +441,180 @@ function showEmptyCart() {
 }
 
 
-// ========================================
-// TĂNG / GIẢM SỐ LƯỢNG
-// ========================================
+async function changeQuantity(itemId, amount) {
 
-function changeQuantity(itemId, amount) {
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
 
-    alert(
-        "Chức năng thay đổi số lượng sẽ được kết nối với API ở bước tiếp theo."
-    );
+    if (!cartToken) {
+        return;
+    }
+
+
+    // Lấy cart hiện tại
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/${cartToken}`
+            );
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+            throw new Error(
+                data.message ||
+                "Không thể lấy giỏ hàng."
+            );
+        }
+
+
+        const item =
+            data.cart.items.find(
+                item => Number(item.id) === Number(itemId)
+            );
+
+
+        if (!item) {
+            return;
+        }
+
+
+        const newQuantity =
+            Number(item.quantity) + Number(amount);
+
+
+        // Nếu giảm về 0 thì xóa
+        if (newQuantity <= 0) {
+
+            await removeFromCart(itemId);
+
+            return;
+        }
+
+
+        const updateResponse =
+            await fetch(
+                `${API_URL}/api/cart/items/${itemId}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        cartToken:
+                            cartToken,
+
+                        quantity:
+                            newQuantity
+
+                    })
+                }
+            );
+
+
+        const updateData =
+            await updateResponse.json();
+
+
+        if (!updateResponse.ok) {
+
+            throw new Error(
+                updateData.message ||
+                "Không thể cập nhật số lượng."
+            );
+
+        }
+
+
+        // Load lại cart từ database
+        await renderCart();
+
+
+    } catch (error) {
+
+        console.error(
+            "Change quantity error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra."
+        );
+
+    }
 
 }
 
+async function removeFromCart(itemId) {
 
-// ========================================
-// XÓA SẢN PHẨM
-// ========================================
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
 
-function removeFromCart(itemId) {
+    if (!cartToken) {
+        return;
+    }
 
-    alert(
-        "Chức năng xóa sản phẩm sẽ được kết nối với API ở bước tiếp theo."
-    );
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/items/${itemId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        cartToken:
+                            cartToken
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Không thể xóa sản phẩm."
+            );
+
+        }
+
+
+        // Load lại cart từ database
+        await renderCart();
+
+
+    } catch (error) {
+
+        console.error(
+            "Remove cart item error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra khi xóa sản phẩm."
+        );
+
+    }
 
 }
 
