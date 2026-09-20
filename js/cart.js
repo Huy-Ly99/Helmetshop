@@ -1,6 +1,7 @@
 // ========================================
 // HELMET HOP - CART
 // ========================================
+
 // Lấy giỏ hàng từ localStorage
 function getCart() {
 
@@ -135,7 +136,7 @@ function renderCart() {
                     src="${item.image}"
                     alt="${item.name}"
                     class="cart-item-image"
-                    onerror="this.style.display='none'"
+                    onerror="this.src='https://via.placeholder.com/100'"
                 >
 
 
