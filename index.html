@@ -215,58 +215,70 @@
 
             <div class="category-grid">
 
-                <a href="#" class="category-card">
+    <a href="non-fullface.html" class="category-card">
 
-                    <div class="category-image">
-                        🪖
-                    </div>
+        <div class="category-image">
+            <img
+                src="images/fullface.jpg"
+                alt="Nón Fullface"
+            >
+        </div>
 
-                    <h3>Nón Fullface</h3>
+        <h3>Nón Fullface</h3>
 
-                    <p>Bảo vệ toàn diện</p>
+        <p>Bảo vệ toàn diện</p>
 
-                </a>
-
-
-                <a href="#" class="category-card">
-
-                    <div class="category-image">
-                        🪖
-                    </div>
-
-                    <h3>Nón 3/4</h3>
-
-                    <p>Phong cách & tiện dụng</p>
-
-                </a>
+    </a>
 
 
-                <a href="#" class="category-card">
+    <a href="non-3-phan-4.html" class="category-card">
 
-                    <div class="category-image">
-                        🪖
-                    </div>
+        <div class="category-image">
+            <img
+                src="images/3phan4.jpg"
+                alt="Nón 3/4"
+            >
+        </div>
 
-                    <h3>Nón nửa đầu</h3>
+        <h3>Nón 3/4</h3>
 
-                    <p>Nhẹ nhàng & thoải mái</p>
+        <p>Phong cách & tiện dụng</p>
 
-                </a>
+    </a>
 
 
-                <a href="#" class="category-card">
+    <a href="non-nua-dau.html" class="category-card">
 
-                    <div class="category-image">
-                        🧤
-                    </div>
+        <div class="category-image">
+            <img
+                src="images/nuadau.jpg"
+                alt="Nón nửa đầu"
+            >
+        </div>
 
-                    <h3>Phụ kiện</h3>
+        <h3>Nón nửa đầu</h3>
 
-                    <p>Đồ dùng cho biker</p>
+        <p>Nhẹ nhàng & thoải mái</p>
 
-                </a>
+    </a>
 
-            </div>
+
+    <a href="phu-kien.html" class="category-card">
+
+        <div class="category-image">
+            <img
+                src="images/phukien.jpg"
+                alt="Phụ kiện"
+            >
+        </div>
+
+        <h3>Phụ kiện</h3>
+
+        <p>Đồ dùng cho biker</p>
+
+    </a>
+
+</div>
 
         </div>
 
@@ -346,139 +358,6 @@
     const API_URL = "https://helmetshop-api.onrender.com";
 
 
-    async function loadProducts() {
-
-        try {
-
-            const response =
-                await fetch(`${API_URL}/api/products`);
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Không thể lấy danh sách sản phẩm"
-                );
-
-            }
-
-            const products =
-                await response.json();
-
-
-            const productGrid =
-                document.getElementById("productGrid");
-
-
-            productGrid.innerHTML = "";
-
-
-            products.forEach(product => {
-
-                let imageHTML = `
-                    <div class="helmet-placeholder">
-                        🪖
-                    </div>
-                `;
-
-
-                if (product.image) {
-
-                    const imageUrl = product.image.startsWith("http")
-                        ? product.image
-                        : `${API_URL}${product.image}`;
-
-                    imageHTML = `
-                        <img
-                            src="${imageUrl}"
-                            alt="${product.name}"
-                        >
-                    `;
-
-                }
-
-
-                const productCard = `
-
-                    <div class="product-card" onclick="viewProduct(${product.id})"
-
-                        data-id="${product.id}"
-         data-name="${product.name}"
-         data-price="${product.price}"
-         data-image="${product.image || ""}">
-
-        <div class="product-image">
-
-            <div class="helmet-placeholder">
-
-                ${imageHTML}
-
-            </div>
-
-            <button class="heart">
-                ♡
-            </button>
-
-        </div>
-
-
-                        <div class="product-info">
-
-                            <p class="product-category">
-                                ${product.category || ""}
-                            </p>
-
-
-                            <h3>
-                                ${product.name}
-                            </h3>
-
-
-                            <div class="rating">
-                                ⭐⭐⭐⭐⭐
-                            </div>
-
-
-                            <div class="product-bottom">
-
-                                <strong>
-                                    ${Number(product.price)
-                                        .toLocaleString("vi-VN")}đ
-                                </strong>
-
-
-                               
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                `;
-                    productGrid.innerHTML += productCard;
-
-              
-
-            });
-
-            
-        } catch (error) {
-
-            console.error(error);
-
-            document.getElementById("productGrid").innerHTML = `
-
-                <p>
-                    Không thể tải sản phẩm.
-                </p>
-
-            `;
-
-        }
-
-    }
-
-
-    loadProducts();
 
 </script>
 
