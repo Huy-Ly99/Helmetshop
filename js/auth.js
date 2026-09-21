@@ -43,7 +43,7 @@ if (text) {
         }
 
         // Ẩn nút Thêm vào giỏ hàng
-    document.querySelectorAll(".add-to-cart").forEach(button => {
+    document.querySelectorAll(".detail-add-cart").forEach(button => {
         button.style.display = "none";
     });
 
