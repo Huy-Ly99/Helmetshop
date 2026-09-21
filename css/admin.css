@@ -670,27 +670,44 @@ body {
 }
 
 
-/* RESPONSIVE */
+/* =====================================================
+   ADMIN RESPONSIVE
+===================================================== */
+
+
+/* =========================
+   TABLET / IPAD
+========================= */
 
 @media (max-width: 1000px) {
 
     .dashboard-cards {
-        grid-template-columns:
-            repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-main {
+        padding: 25px;
     }
 
 }
 
 
+/* =========================
+   TABLET DỌC / MOBILE
+========================= */
+
 @media (max-width: 700px) {
 
+    /* SIDEBAR */
+
     .sidebar {
-        width: 70px;
+        width: 65px;
     }
 
     .admin-logo {
         font-size: 0;
         text-align: center;
+        padding: 20px 5px 10px;
     }
 
     .admin-logo:first-letter {
@@ -706,15 +723,192 @@ body {
     .menu-item,
     .logout-button {
         justify-content: center;
+        padding: 15px 5px;
+        font-size: 20px;
+    }
+
+
+    /* MAIN */
+
+    .admin-main {
+        margin-left: 65px;
+        padding: 18px;
+    }
+
+
+    /* HEADER */
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .admin-header h1 {
+        font-size: 25px;
+    }
+
+    .admin-header p {
+        font-size: 13px;
+    }
+
+    .admin-account {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+
+
+    /* DASHBOARD CARDS */
+
+    .dashboard-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .dashboard-card p {
+        font-size: 12px;
+    }
+
+    .dashboard-card h2 {
+        font-size: 20px;
+    }
+
+
+    /* SECTION */
+
+    .dashboard-section {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 18px;
+    }
+
+    .section-header h2 {
+        font-size: 19px;
+    }
+
+    .add-product-button {
+        width: 100%;
+        padding: 12px;
+    }
+
+
+    /* PRODUCT TABLE */
+
+    .product-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .product-table {
+        min-width: 750px;
+    }
+
+    .product-table th,
+    .product-table td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+
+    /* PRODUCT BUTTON */
+
+    .edit-button,
+    .delete-button {
+        padding: 8px 10px;
+        margin-bottom: 4px;
+    }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 480px) {
+
+    .sidebar {
+        width: 58px;
     }
 
     .admin-main {
-        margin-left: 70px;
-        padding: 20px;
+        margin-left: 58px;
+        padding: 12px;
     }
 
+
+    .admin-logo {
+        padding-top: 18px;
+    }
+
+
+    .menu-item,
+    .logout-button {
+        font-size: 18px;
+        padding: 14px 3px;
+    }
+
+
+    .admin-header h1 {
+        font-size: 22px;
+    }
+
+
+    .admin-header p {
+        font-size: 12px;
+    }
+
+
     .dashboard-cards {
-        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+
+    .dashboard-card {
+        padding: 12px;
+        gap: 8px;
+    }
+
+
+    .card-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 17px;
+    }
+
+
+    .dashboard-card p {
+        font-size: 11px;
+    }
+
+
+    .dashboard-card h2 {
+        font-size: 18px;
+    }
+
+
+    .dashboard-section {
+        padding: 12px;
     }
 
 }

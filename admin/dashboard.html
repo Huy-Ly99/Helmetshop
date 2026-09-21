@@ -906,12 +906,11 @@ document
 
         function logout() {
 
-            localStorage.removeItem("adminEmail");
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminEmail");
 
-            window.location.href =
-                "login.html";
-
-        }
+    window.location.href = "login.html";
+}
 
 
         // Chạy khi mở Dashboard
