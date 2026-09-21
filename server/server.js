@@ -1477,3 +1477,35 @@ app.get("/api/products/:id", async (req, res) => {
         });
     }
 });
+
+
+
+app.get("/api/test-db", async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT
+                current_database() AS database_name,
+                current_user AS user_name
+        `);
+
+        const tables = await pool.query(`
+            SELECT table_name
+            FROM information_schema.tables
+            WHERE table_schema = 'public'
+            ORDER BY table_name
+        `);
+
+        res.json({
+            database: result.rows[0],
+            tables: tables.rows
+        });
+
+    } catch (error) {
+        console.error("Test DB error:", error);
+
+        res.status(500).json({
+            message: "Không kiểm tra được database.",
+            error: error.message
+        });
+    }
+});
