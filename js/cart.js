@@ -561,6 +561,88 @@ async function changeQuantity(itemId, amount) {
 }
 
 // ========================================
+// XÓA SẢN PHẨM KHỎI GIỎ HÀNG
+// ========================================
+
+async function removeFromCart(itemId) {
+
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+    if (!cartToken) {
+        alert("Không tìm thấy giỏ hàng.");
+        return;
+    }
+
+    const confirmDelete =
+        confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?");
+
+    if (!confirmDelete) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/cart/items/${itemId}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        cartToken: cartToken
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Remove cart item response:",
+            data
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.message ||
+                "Không thể xóa sản phẩm."
+            );
+
+        }
+
+
+        // Tải lại giỏ hàng
+        await renderCart();
+
+
+    } catch (error) {
+
+        console.error(
+            "Remove from cart error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra khi xóa sản phẩm."
+        );
+
+    }
+}
+
+
+
+
+// ========================================
 // CẬP NHẬT TÓM TẮT ĐƠN HÀNG
 // ========================================
 
