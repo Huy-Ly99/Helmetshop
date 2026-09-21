@@ -553,17 +553,38 @@
 
         }
 
-async function deleteOrder(orderId) {
+async function deleteOrder(orderId, contactStatus) {
 
-    const confirmed = confirm(
-        "Bạn có chắc muốn xóa đơn hàng này?\n\n" +
-        "Đơn hàng đã được hoàn tiền.\n" +
-        "Sau khi xóa sẽ không thể khôi phục."
-    );
+    let confirmMessage = "";
+
+    if (contactStatus === "REFUNDED") {
+
+        confirmMessage =
+            "Bạn có chắc muốn xóa đơn hàng này?\n\n" +
+            "Đơn hàng đã được hoàn tiền.\n" +
+            "Sau khi xóa sẽ không thể khôi phục.";
+
+    } else if (contactStatus === "CANCELLED") {
+
+        confirmMessage =
+            "Bạn có chắc muốn xóa đơn hàng này?\n\n" +
+            "Đơn hàng đã bị hủy.\n" +
+            "Sau khi xóa sẽ không thể khôi phục.";
+
+    } else {
+
+        confirmMessage =
+            "Bạn có chắc muốn xóa đơn hàng này?\n" +
+            "Sau khi xóa sẽ không thể khôi phục.";
+    }
+
+
+    const confirmed = confirm(confirmMessage);
 
     if (!confirmed) {
         return;
     }
+
 
     try {
 
@@ -571,11 +592,14 @@ async function deleteOrder(orderId) {
             `${API_URL}/api/admin/orders/${orderId}`,
             {
                 method: "DELETE",
+
                 headers: {
-                    Authorization: `Bearer ${adminToken}`
+                    Authorization:
+                        `Bearer ${adminToken}`
                 }
             }
         );
+
 
         if (response.status === 401) {
 
@@ -583,10 +607,13 @@ async function deleteOrder(orderId) {
             localStorage.removeItem("adminEmail");
 
             window.location.href = "login.html";
+
             return;
         }
 
+
         const data = await response.json();
+
 
         if (!response.ok) {
 
@@ -598,13 +625,21 @@ async function deleteOrder(orderId) {
             return;
         }
 
+
+        // Tải lại danh sách đơn hàng
         loadOrders();
+
 
     } catch (error) {
 
-        console.error("Delete order error:", error);
+        console.error(
+            "Delete order error:",
+            error
+        );
 
-        alert("Không thể kết nối tới server!");
+        alert(
+            "Không thể kết nối tới server!"
+        );
     }
 }
 
@@ -922,7 +957,7 @@ switch (order.contact_status) {
         actionHTML = `
             <button
                 class="btn-delete"
-                onclick="deleteOrder(${order.id})"
+                onclick="deleteOrder(${order.id}, 'REFUNDED')"
                 title="Xóa đơn hàng"
             >
                 ✕
@@ -942,7 +977,7 @@ switch (order.contact_status) {
 
             <button
             class="btn-delete"
-            onclick="deleteOrder(${order.id})"
+            onclick="deleteOrder(${order.id}, 'CANCELLED')"
             title="Xóa đơn hàng"
         >
             ✕
