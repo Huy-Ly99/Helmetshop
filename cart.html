@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,347 +9,14 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/cart.css">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
-
-        .cart-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .cart-title {
-            font-size: 30px;
-            margin-bottom: 25px;
-        }
-
-        .cart-layout {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 25px;
-            align-items: start;
-        }
-
-        .cart-products {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .cart-item {
-            display: grid;
-            grid-template-columns: 100px 1fr auto;
-            gap: 20px;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-
-        .cart-item-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-
-        .cart-item-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .cart-item-price {
-            color: #e53935;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .quantity-box {
-            display: flex;
-            align-items: center;
-            gap: 0;
-        }
-
-        .quantity-btn {
-            width: 32px;
-            height: 32px;
-            border: 1px solid #ddd;
-            background: #f5f5f5;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .quantity-btn:hover {
-            background: #ddd;
-        }
-
-        .quantity-value {
-            width: 40px;
-            height: 32px;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .item-total {
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: right;
-        }
-
-        .remove-btn {
-            border: none;
-            background: none;
-            color: #e53935;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .remove-btn:hover {
-            text-decoration: underline;
-        }
-
-        .cart-summary {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            position: sticky;
-            top: 20px;
-        }
-
-        .cart-summary h2 {
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .summary-total {
-            border-top: 1px solid #ddd;
-            padding-top: 18px;
-            margin-top: 20px;
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .checkout-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            background: #111;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .checkout-btn:hover {
-            background: #333;
-        }
-
-        .continue-btn {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #111;
-            text-decoration: none;
-        }
-
-        .continue-btn:hover {
-            text-decoration: underline;
-        }
-
-        .empty-cart {
-            background: white;
-            border-radius: 10px;
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .empty-cart-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        .empty-cart h2 {
-            margin-bottom: 10px;
-        }
-
-        .empty-cart p {
-            color: #777;
-            margin-bottom: 25px;
-        }
-
-        .shopping-btn {
-            display: inline-block;
-            padding: 12px 25px;
-            background: #111;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-
-
-
-/* ========================================
-   CHECKOUT MODAL
-======================================== */
-
-.checkout-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-
-    background: rgba(0, 0, 0, 0.5);
-
-    z-index: 9999;
-
-    align-items: center;
-    justify-content: center;
-}
-
-.checkout-modal.show {
-    display: flex;
-}
-
-.checkout-box {
-    width: 90%;
-    max-width: 480px;
-
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 30px;
-
-    position: relative;
-
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-}
-
-.checkout-box h2 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 24px;
-}
-
-.checkout-description {
-    color: #777;
-    font-size: 14px;
-
-    margin-bottom: 25px;
-
-    line-height: 1.5;
-}
-
-.checkout-close {
-    position: absolute;
-
-    top: 12px;
-    right: 15px;
-
-    width: 32px;
-    height: 32px;
-
-    background: none;
-
-    border: none;
-
-    font-size: 28px;
-    color: #777;
-
-    cursor: pointer;
-}
-
-.checkout-close:hover {
-    color: #e63946;
-}
-
-.form-group {
-    margin-bottom: 18px;
-}
-
-.form-group label {
-    display: block;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    margin-bottom: 7px;
-}
-
-.form-group input,
-.form-group textarea {
-    width: 100%;
-
-    padding: 12px;
-
-    border: 1px solid #ddd;
-    border-radius: 6px;
-
-    font-size: 14px;
-    font-family: inherit;
-
-    outline: none;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-    border-color: #e63946;
-}
-
-.form-group textarea {
-    resize: vertical;
-}
-
-.confirm-order-btn {
-    width: 100%;
-
-    padding: 14px;
-
-    background: #e63946;
-    color: white;
-
-    border: none;
-    border-radius: 6px;
-
-    font-size: 15px;
-    font-weight: bold;
-
-    cursor: pointer;
-}
-
-.confirm-order-btn:hover {
-    background: #c92e3b;
-}
-
-    </style>
 </head>
 
 
-
 <body>
+
+    <!-- ========================================
+         HEADER
+    ======================================== -->
 
     <header style="
         background:#111;
@@ -357,18 +25,36 @@
         justify-content:space-between;
         align-items:center;
     ">
+
         <a href="index.html"
-           style="color:white;text-decoration:none;font-size:24px;font-weight:bold;">
+           style="
+                color:white;
+                text-decoration:none;
+                font-size:24px;
+                font-weight:bold;
+           ">
             HelmetHop
         </a>
 
+
         <a href="cart.html"
-           style="color:white;text-decoration:none;">
+           style="
+                color:white;
+                text-decoration:none;
+           ">
+
             🛒 Giỏ hàng
+
             <span id="cartCount">0</span>
+
         </a>
+
     </header>
 
+
+    <!-- ========================================
+         CART
+    ======================================== -->
 
     <main class="cart-container">
 
@@ -381,10 +67,16 @@
     </main>
 
 
-    <!-- CHECKOUT MODAL -->
+    <!-- ========================================
+         CHECKOUT MODAL
+    ======================================== -->
+
     <div id="checkoutModal" class="checkout-modal">
 
         <div class="checkout-box">
+
+
+            <!-- CLOSE -->
 
             <button
                 class="checkout-close"
@@ -392,13 +84,26 @@
                 ×
             </button>
 
-            <h2>Thông tin đặt hàng</h2>
+
+            <!-- TITLE -->
+
+            <h2>
+                Thông tin đặt hàng
+            </h2>
+
 
             <p class="checkout-description">
-                Vui lòng nhập thông tin để chúng tôi liên hệ xác nhận đơn hàng.
+                Vui lòng nhập thông tin để chúng tôi
+                liên hệ xác nhận đơn hàng.
             </p>
 
+
+            <!-- FORM -->
+
             <div class="checkout-form">
+
+
+                <!-- NAME -->
 
                 <div class="form-group">
 
@@ -415,6 +120,8 @@
                 </div>
 
 
+                <!-- PHONE -->
+
                 <div class="form-group">
 
                     <label for="customerPhone">
@@ -430,10 +137,13 @@
                 </div>
 
 
+                <!-- ADDRESS -->
+
                 <div class="form-group">
 
                     <label for="customerAddress">
-                        Địa chỉ giao hàng  (Địa chỉ, đường, phường, thành phố)
+                        Địa chỉ giao hàng
+                        (Địa chỉ, đường, phường, thành phố)
                     </label>
 
                     <textarea
@@ -447,10 +157,14 @@
             </div>
 
 
+            <!-- CONFIRM -->
+
             <button
                 class="confirm-order-btn"
                 onclick="submitOrder()">
+
                 Xác nhận đặt hàng
+
             </button>
 
         </div>
@@ -458,8 +172,13 @@
     </div>
 
 
+    <!-- ========================================
+         JAVASCRIPT
+    ======================================== -->
+
     <script src="js/cart.js"></script>
     <script src="js/script.js"></script>
 
 </body>
+
 </html>
