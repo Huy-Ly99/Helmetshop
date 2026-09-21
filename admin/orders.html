@@ -824,133 +824,130 @@ async function deleteOrder(orderId) {
         // ========================================
 
         let statusText = "";
-        let statusClass = "";
+let statusClass = "";
+let actionHTML = "";
+
+switch (order.contact_status) {
+
+    case "PENDING":
+        statusText = "Chưa liên hệ";
+        statusClass = "status-pending";
+
+        actionHTML = `
+            <button
+                class="btn-contacted"
+                onclick="updateOrderStatus(${order.id}, 'CONTACTED')"
+            >
+                Đã liên hệ
+            </button>
+        `;
+        break;
 
 
-        switch (order.contact_status) {
+    case "CONTACTED":
+        statusText = "Đã liên hệ";
+        statusClass = "status-contacted";
 
-            case "PENDING":
-    statusText = "Chưa liên hệ";
-    statusClass = "status-pending";
+        actionHTML = `
+            <button
+                class="btn-cancel"
+                onclick="updateOrderStatus(${order.id}, 'CANCELLED')"
+            >
+                Hủy hàng
+            </button>
 
-    actionHTML = `
-        <button
-            class="order-action btn-contacted"
-            onclick="updateOrderStatus(${order.id}, 'CONTACTED')"
-        >
-            Đã liên hệ
-        </button>
-    `;
-    break;
-
-
-case "CONTACTED":
-    statusText = "Đã liên hệ";
-    statusClass = "status-contacted";
-
-    actionHTML = `
-        <button
-            class="order-action btn-cancel"
-            onclick="updateOrderStatus(${order.id}, 'CANCELLED')"
-        >
-            Hủy hàng
-        </button>
-
-        <button
-            class="order-action btn-paid"
-            onclick="updateOrderStatus(${order.id}, 'PAID')"
-        >
-            Đã nhận tiền
-        </button>
-    `;
-    break;
+            <button
+                class="btn-paid"
+                onclick="updateOrderStatus(${order.id}, 'PAID')"
+            >
+                Đã nhận tiền
+            </button>
+        `;
+        break;
 
 
-case "PAID":
-    statusText = "Đã nhận tiền";
-    statusClass = "status-paid";
+    case "PAID":
+        statusText = "Đã nhận tiền";
+        statusClass = "status-paid";
 
-    actionHTML = `
-        <button
-            class="order-action btn-exchange"
-            onclick="updateOrderStatus(${order.id}, 'EXCHANGE')"
-        >
-            Đổi hàng
-        </button>
+        actionHTML = `
+            <button
+                class="btn-exchange"
+                onclick="updateOrderStatus(${order.id}, 'EXCHANGE')"
+            >
+                Đổi hàng
+            </button>
 
-        <button
-            class="order-action btn-return"
-            onclick="updateOrderStatus(${order.id}, 'RETURN')"
-        >
-            Trả hàng
-        </button>
-    `;
-    break;
-
-
-case "EXCHANGE":
-    statusText = "Đổi hàng";
-    statusClass = "status-exchange";
-
-    actionHTML = `
-        <span class="order-finished">
-            Đang xử lý đổi hàng
-        </span>
-    `;
-    break;
+            <button
+                class="btn-return"
+                onclick="updateOrderStatus(${order.id}, 'RETURN')"
+            >
+                Trả hàng
+            </button>
+        `;
+        break;
 
 
-case "RETURN":
-    statusText = "Đã nhận hàng trả";
-    statusClass = "status-return";
+    case "EXCHANGE":
+        statusText = "Đổi hàng";
+        statusClass = "status-exchange";
 
-    actionHTML = `
-        <button
-            class="order-action btn-refund"
-            onclick="updateOrderStatus(${order.id}, 'REFUNDED')"
-        >
-            Hoàn tiền
-        </button>
-    `;
-    break;
+        actionHTML = `
+            <span class="order-finished">
+                Đang xử lý đổi hàng
+            </span>
+        `;
+        break;
 
 
-case "REFUNDED":
-    statusText = "Đã hoàn tiền";
-    statusClass = "status-refunded";
+    case "RETURN":
+        statusText = "Đã nhận hàng trả";
+        statusClass = "status-return";
 
-    actionHTML = `
-        <button
-            class="order-action btn-delete"
-            onclick="deleteOrder(${order.id})"
-            title="Xóa đơn hàng"
-        >
-            ✕
-        </button>
-    `;
-    break;
-
-
-case "CANCELLED":
-    statusText = "Đã hủy";
-    statusClass = "status-cancelled";
-
-    actionHTML = `
-        <span class="order-finished">
-            Đơn hàng đã hủy
-        </span>
-    `;
-    break;
+        actionHTML = `
+            <button
+                class="btn-refund"
+                onclick="updateOrderStatus(${order.id}, 'REFUNDED')"
+            >
+                Hoàn tiền
+            </button>
+        `;
+        break;
 
 
-            default:
+    case "REFUNDED":
+        statusText = "Đã hoàn tiền";
+        statusClass = "status-refunded";
 
-                statusText =
-                    "Không xác định";
+        actionHTML = `
+            <button
+                class="btn-delete"
+                onclick="deleteOrder(${order.id})"
+                title="Xóa đơn hàng"
+            >
+                ✕
+            </button>
+        `;
+        break;
 
-                statusClass =
-                    "status-pending";
-        }
+
+    case "CANCELLED":
+        statusText = "Đã hủy";
+        statusClass = "status-cancelled";
+
+        actionHTML = `
+            <span class="order-finished">
+                Đơn hàng đã hủy
+            </span>
+        `;
+        break;
+
+
+    default:
+        statusText = "Không xác định";
+        statusClass = "status-pending";
+        actionHTML = "";
+}
 
 
         const statusHTML = `
@@ -961,12 +958,6 @@ case "CANCELLED":
 
         `;
 
-
-        // ========================================
-        // ACTION BUTTONS
-        // ========================================
-
-        let actionHTML = "";
 
 
         // -----------------------------
@@ -1031,95 +1022,7 @@ case "CANCELLED":
         }
 
 
-        // -----------------------------
-        // PAID
-        // -----------------------------
-
-        else if (
-            order.contact_status === "PAID"
-        ) {
-
-            actionHTML = `
-
-                <button
-                    class="btn-exchange"
-                    onclick="updateOrderStatus(
-                        ${order.id},
-                        'EXCHANGE'
-                    )">
-
-                    Đổi hàng
-
-                </button>
-
-
-                <button
-                    class="btn-return"
-                    onclick="updateOrderStatus(
-                        ${order.id},
-                        'RETURN'
-                    )">
-
-                    Trả hàng
-
-                </button>
-
-            `;
-        }
-
-
-        // -----------------------------
-        // EXCHANGE
-        // -----------------------------
-
-        else if (
-            order.contact_status === "EXCHANGE"
-        ) {
-
-            actionHTML = `
-
-                <span class="order-finished">
-                    Đang xử lý đổi hàng
-                </span>
-
-            `;
-        }
-
-
-        // -----------------------------
-        // RETURN
-        // -----------------------------
-
-        else if (
-            order.contact_status === "RETURN"
-        ) {
-
-            actionHTML = `
-
-                <span class="order-finished">
-                    Đang xử lý trả hàng
-                </span>
-
-            `;
-        }
-
-
-        // -----------------------------
-        // CANCELLED
-        // -----------------------------
-
-        else if (
-            order.contact_status === "CANCELLED"
-        ) {
-
-            actionHTML = `
-
-                <span class="order-finished">
-                    Đơn hàng đã hủy
-                </span>
-
-            `;
-        }
+       
 
 
         // ========================================
