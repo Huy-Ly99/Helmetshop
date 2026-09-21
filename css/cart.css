@@ -107,7 +107,7 @@ body {
 .cart-item-image {
     width: 100px;
 
-    height: 100px;
+    height: 80px;
 
     object-fit: contain;
 
@@ -116,6 +116,8 @@ body {
     border: 1px solid #eee;
 
     background: #f8f8f8;
+
+    display: block;
 }
 
 
@@ -650,13 +652,13 @@ body {
 
 
     .cart-item-image {
-        width: 85px;
+    width: 85px;
+    height: 68px;
 
-        height: 85px;
+    object-fit: contain;
 
-        object-fit: contain;
-    }
-
+    display: block;
+}
 
     .cart-item-name {
         font-size: 16px;
@@ -751,10 +753,13 @@ body {
 
 
     .cart-item-image {
-        width: 75px;
+    width: 75px;
+    height: 60px;
 
-        height: 75px;
-    }
+    object-fit: contain;
+
+    display: block;
+}
 
 
     .cart-item-name {
@@ -907,12 +912,13 @@ body {
 
 
     .cart-item-image {
-        width: 65px;
+    width: 65px;
+    height: 52px;
 
-        height: 65px;
+    border-radius: 6px;
 
-        border-radius: 6px;
-    }
+    object-fit: contain;
+}
 
 
     .cart-item-name {
