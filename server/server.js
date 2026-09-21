@@ -948,7 +948,7 @@ app.get("/api/admin/orders", requireAdmin, async (req, res) => {
         ELSE 6
     END,
     created_at DESC
-                created_at DESC
+    
         `);
 
 
