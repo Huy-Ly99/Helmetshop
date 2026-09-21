@@ -948,7 +948,7 @@ app.get("/api/admin/orders", requireAdmin, async (req, res) => {
         ELSE 6
     END,
     created_at DESC
-    
+
         `);
 
 
@@ -1433,6 +1433,56 @@ app.delete("/api/products/:id", requireAdmin, async (req, res) => {
     }
 
 });
+
+app.delete(
+    "/api/admin/orders/:id",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const orderId = Number(req.params.id);
+
+            if (!orderId) {
+                return res.status(400).json({
+                    message: "Order ID không hợp lệ."
+                });
+            }
+
+            const result = await pool.query(`
+                DELETE FROM public.orders
+                WHERE id = $1
+                AND contact_status = 'REFUNDED'
+                RETURNING id
+            `, [orderId]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({
+                    message:
+                        "Chỉ được xóa đơn hàng sau khi đã hoàn tiền."
+                });
+            }
+
+            res.json({
+                message: "Đã xóa đơn hàng.",
+                orderId: result.rows[0].id
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Delete order error:",
+                error
+            );
+
+            res.status(500).json({
+                message: "Không thể xóa đơn hàng.",
+                error: error.message
+            });
+        }
+    }
+);
+
 
 // =========================
 // START SERVER

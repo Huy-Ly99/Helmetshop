@@ -553,7 +553,62 @@
 
         }
 
+async function deleteOrder(orderId) {
 
+    const confirmed = confirm(
+        "Bạn có chắc muốn xóa đơn hàng này?\n\n" +
+        "Đơn hàng đã được hoàn tiền.\n" +
+        "Sau khi xóa sẽ không thể khôi phục."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/admin/orders/${orderId}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${adminToken}`
+                }
+            }
+        );
+
+        if (response.status === 401) {
+
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("adminEmail");
+
+            window.location.href = "login.html";
+            return;
+        }
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Không thể xóa đơn hàng."
+            );
+
+            return;
+        }
+
+        loadOrders();
+
+    } catch (error) {
+
+        console.error("Delete order error:", error);
+
+        alert("Không thể kết nối tới server!");
+    }
+}
+
+        
         // =========================
         // ESCAPE HTML
         // =========================
@@ -775,69 +830,117 @@
         switch (order.contact_status) {
 
             case "PENDING":
+    statusText = "Chưa liên hệ";
+    statusClass = "status-pending";
 
-                statusText =
-                    "Chưa liên hệ";
-
-                statusClass =
-                    "status-pending";
-
-                break;
-
-
-            case "CONTACTED":
-
-                statusText =
-                    "Đã liên hệ";
-
-                statusClass =
-                    "status-contacted";
-
-                break;
+    actionHTML = `
+        <button
+            class="order-action btn-contacted"
+            onclick="updateOrderStatus(${order.id}, 'CONTACTED')"
+        >
+            Đã liên hệ
+        </button>
+    `;
+    break;
 
 
-            case "PAID":
+case "CONTACTED":
+    statusText = "Đã liên hệ";
+    statusClass = "status-contacted";
 
-                statusText =
-                    "Đã nhận tiền";
+    actionHTML = `
+        <button
+            class="order-action btn-cancel"
+            onclick="updateOrderStatus(${order.id}, 'CANCELLED')"
+        >
+            Hủy hàng
+        </button>
 
-                statusClass =
-                    "status-paid";
-
-                break;
-
-
-            case "CANCELLED":
-
-                statusText =
-                    "Đã hủy";
-
-                statusClass =
-                    "status-cancelled";
-
-                break;
-
-
-            case "EXCHANGE":
-
-                statusText =
-                    "Đổi hàng";
-
-                statusClass =
-                    "status-exchange";
-
-                break;
+        <button
+            class="order-action btn-paid"
+            onclick="updateOrderStatus(${order.id}, 'PAID')"
+        >
+            Đã nhận tiền
+        </button>
+    `;
+    break;
 
 
-            case "RETURN":
+case "PAID":
+    statusText = "Đã nhận tiền";
+    statusClass = "status-paid";
 
-                statusText =
-                    "Trả hàng";
+    actionHTML = `
+        <button
+            class="order-action btn-exchange"
+            onclick="updateOrderStatus(${order.id}, 'EXCHANGE')"
+        >
+            Đổi hàng
+        </button>
 
-                statusClass =
-                    "status-return";
+        <button
+            class="order-action btn-return"
+            onclick="updateOrderStatus(${order.id}, 'RETURN')"
+        >
+            Trả hàng
+        </button>
+    `;
+    break;
 
-                break;
+
+case "EXCHANGE":
+    statusText = "Đổi hàng";
+    statusClass = "status-exchange";
+
+    actionHTML = `
+        <span class="order-finished">
+            Đang xử lý đổi hàng
+        </span>
+    `;
+    break;
+
+
+case "RETURN":
+    statusText = "Đã nhận hàng trả";
+    statusClass = "status-return";
+
+    actionHTML = `
+        <button
+            class="order-action btn-refund"
+            onclick="updateOrderStatus(${order.id}, 'REFUNDED')"
+        >
+            Hoàn tiền
+        </button>
+    `;
+    break;
+
+
+case "REFUNDED":
+    statusText = "Đã hoàn tiền";
+    statusClass = "status-refunded";
+
+    actionHTML = `
+        <button
+            class="order-action btn-delete"
+            onclick="deleteOrder(${order.id})"
+            title="Xóa đơn hàng"
+        >
+            ✕
+        </button>
+    `;
+    break;
+
+
+case "CANCELLED":
+    statusText = "Đã hủy";
+    statusClass = "status-cancelled";
+
+    actionHTML = `
+        <span class="order-finished">
+            Đơn hàng đã hủy
+        </span>
+    `;
+    break;
 
 
             default:
@@ -1265,20 +1368,12 @@
 
     const confirmMessages = {
 
-        CONTACTED:
-            "Bạn xác nhận đã liên hệ với khách hàng?",
-
-        PAID:
-            "Bạn xác nhận đã nhận tiền từ khách hàng?",
-
-        CANCELLED:
-            "Bạn xác nhận HỦY đơn hàng này?",
-
-        EXCHANGE:
-            "Bạn xác nhận khách yêu cầu ĐỔI hàng?",
-
-        RETURN:
-            "Bạn xác nhận khách yêu cầu TRẢ hàng?"
+        CONTACTED: "Bạn xác nhận đã liên hệ với khách hàng?",
+        PAID: "Bạn xác nhận đã nhận tiền từ khách hàng?",
+        CANCELLED: "Bạn xác nhận HỦY đơn hàng này?",
+        EXCHANGE: "Bạn xác nhận khách yêu cầu ĐỔI hàng?",
+        RETURN: "Bạn xác nhận đã NHẬN LẠI HÀNG từ khách?",
+        REFUNDED: "Bạn xác nhận đã HOÀN TIỀN cho khách hàng?"
     };
 
 
