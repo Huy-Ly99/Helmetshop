@@ -829,44 +829,53 @@ button {
 
     /* HEADER ACTION */
 
-    .header-actions {
-        gap: 12px;
-    }
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-    .header-actions a {
-        font-size: 20px;
-    }
+.header-actions a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    white-space: nowrap;
+}
 
-    .header-actions span {
-        display: none;
-    }
+#accountLink {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
 
-    #accountLink {
-        font-size: 20px;
-    }
+#logoutLink {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
 
-    #logoutLink {
-        font-size: 20px;
-    }
+.cart {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
 
-    .cart {
-        font-size: 20px;
-    }
+#adminAvatar {
+    width: 30px;
+    height: 30px;
+}
 
-    #adminAvatar {
-        width: 34px;
-        height: 34px;
-    }
-
-    .cart b {
-        top: -8px;
-        right: -8px;
-
-        width: 17px;
-        height: 17px;
-
-        font-size: 10px;
-    }
+.cart b {
+    top: -7px;
+    right: -7px;
+    width: 17px;
+    height: 17px;
+    font-size: 10px;
+}
 
 
     /* =====================================================
@@ -1217,24 +1226,23 @@ button {
     }
 
     .header-actions {
-        gap: 9px;
-    }
+    gap: 8px;
+}
 
-    .header-actions a {
-        font-size: 18px;
-    }
+.header-actions a {
+    font-size: 12px;
+}
 
-    #accountLink,
-    #logoutLink,
-    .cart {
-        font-size: 18px;
-    }
+#accountLink,
+#logoutLink,
+.cart {
+    font-size: 12px;
+}
 
-    #adminAvatar {
-        width: 31px;
-        height: 31px;
-    }
-
+#adminAvatar {
+    width: 28px;
+    height: 28px;
+}
 
     /* SEARCH */
 
