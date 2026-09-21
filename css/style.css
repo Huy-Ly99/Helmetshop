@@ -1708,3 +1708,68 @@ button {
         font-size: 14px;
     }
 }
+
+/* =========================================================
+   FOOTER COLLAPSIBLE
+========================================================= */
+
+/* PC */
+
+.footer-arrow {
+    display: none;
+}
+
+.footer-content {
+    display: block;
+}
+
+
+/* =========================================================
+   MOBILE / TABLET
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .footer-column.collapsible {
+        border-bottom: 1px solid #333;
+    }
+
+    .footer-column.collapsible h3 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin: 0;
+        padding: 15px 0;
+
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .footer-arrow {
+        display: inline-block;
+
+        font-size: 11px;
+
+        transition: transform 0.3s ease;
+    }
+
+    .footer-content {
+        display: none;
+        padding-bottom: 10px;
+    }
+
+    .footer-column.open .footer-content {
+        display: block;
+    }
+
+    .footer-column.open .footer-arrow {
+        transform: rotate(180deg);
+    }
+
+    .footer-content a,
+    .footer-content p {
+        margin-bottom: 10px;
+    }
+
+}

@@ -214,3 +214,12 @@ document.addEventListener(
 
     }
 );
+
+
+function toggleFooter(title) {
+
+    const column = title.parentElement;
+
+    column.classList.toggle("open");
+
+}
