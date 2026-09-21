@@ -1453,7 +1453,7 @@ app.delete(
             const result = await pool.query(`
                 DELETE FROM public.orders
                 WHERE id = $1
-                AND contact_status = 'REFUNDED'
+                AND contact_status IN ('REFUNDED', 'CANCELLED')
                 RETURNING id
             `, [orderId]);
 
