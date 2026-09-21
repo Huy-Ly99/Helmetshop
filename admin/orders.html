@@ -939,6 +939,14 @@ switch (order.contact_status) {
             <span class="order-finished">
                 Đơn hàng đã hủy
             </span>
+
+            <button
+            class="btn-delete"
+            onclick="deleteOrder(${order.id})"
+            title="Xóa đơn hàng"
+        >
+            ✕
+        </button>
         `;
         break;
 
