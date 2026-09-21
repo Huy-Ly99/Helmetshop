@@ -130,6 +130,26 @@
             color: #047857;
         }
 
+        .status-paid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-exchange {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-return {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
         /* =========================
            BUTTON
         ========================= */
@@ -162,6 +182,31 @@
             background: #ffedd5;
             color: #9a3412;
         }
+
+        .btn-cancel {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-paid {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-exchange {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-return {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.order-finished {
+    font-size: 13px;
+    font-weight: 600;
+}
 
         /* =========================
            DETAIL
@@ -614,349 +659,577 @@
 
         function renderOrders(orders) {
 
-            const tableBody =
-                document.getElementById(
-                    "orderTableBody"
-                );
+    const tableBody =
+        document.getElementById("orderTableBody");
 
+    tableBody.innerHTML = "";
 
-            tableBody.innerHTML = "";
 
+    // ========================================
+    // THỐNG KÊ
+    // ========================================
 
-            // Thống kê
+    const totalOrders =
+        orders.length;
 
-            const totalOrders =
-                orders.length;
 
+    const pendingOrders =
+        orders.filter(
+            order =>
+                order.contact_status === "PENDING"
+        ).length;
 
-            const pendingOrders =
-                orders.filter(
-                    order =>
-                        order.contact_status === "PENDING"
-                ).length;
 
+    const contactedOrders =
+        orders.filter(
+            order =>
+                order.contact_status === "CONTACTED"
+        ).length;
 
-            const contactedOrders =
-                orders.filter(
-                    order =>
-                        order.contact_status === "CONTACTED"
-                ).length;
 
+    // Chỉ PAID và EXCHANGE được tính doanh thu
+    // RETURN và CANCELLED không tính
+    const totalRevenue =
+        orders.reduce(
+            (sum, order) => {
 
-            const totalRevenue =
-                orders.reduce(
-                    (sum, order) =>
-                        sum + Number(order.total_amount || 0),
-                    0
-                );
+                if (
+                    order.contact_status === "PAID" ||
+                    order.contact_status === "EXCHANGE"
+                ) {
+                    return sum +
+                        Number(order.total_amount || 0);
+                }
 
+                return sum;
+            },
+            0
+        );
 
-            document.getElementById(
-                "totalOrders"
-            ).textContent = totalOrders;
 
+    document.getElementById(
+        "totalOrders"
+    ).textContent = totalOrders;
 
-            document.getElementById(
-                "pendingOrders"
-            ).textContent = pendingOrders;
 
+    document.getElementById(
+        "pendingOrders"
+    ).textContent = pendingOrders;
 
-            document.getElementById(
-                "contactedOrders"
-            ).textContent = contactedOrders;
 
+    document.getElementById(
+        "contactedOrders"
+    ).textContent = contactedOrders;
 
-            document.getElementById(
-                "totalRevenue"
-            ).textContent =
-                formatMoney(totalRevenue);
 
+    document.getElementById(
+        "totalRevenue"
+    ).textContent =
+        formatMoney(totalRevenue);
 
-            // Không có đơn
 
-            if (orders.length === 0) {
+    // ========================================
+    // KHÔNG CÓ ĐƠN
+    // ========================================
 
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-orders">
-                                Chưa có đơn hàng nào.
-                            </div>
-                        </td>
-                    </tr>
-                `;
+    if (orders.length === 0) {
 
-                return;
-            }
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="8">
+                    <div class="empty-orders">
+                        Chưa có đơn hàng nào.
+                    </div>
+                </td>
+            </tr>
+        `;
 
+        return;
+    }
 
-            orders.forEach(order => {
 
-                const row =
-                    document.createElement("tr");
+    // ========================================
+    // RENDER TỪNG ĐƠN
+    // ========================================
 
+    orders.forEach(order => {
 
-                const productCount =
-                    order.items
-                        ? order.items.length
-                        : 0;
+        const row =
+            document.createElement("tr");
 
 
-                const status =
-                    order.contact_status === "CONTACTED"
-                        ? "CONTACTED"
-                        : "PENDING";
+        const productCount =
+            order.items
+                ? order.items.length
+                : 0;
 
 
-                const statusHTML =
-                    status === "CONTACTED"
+        // ========================================
+        // STATUS TEXT + CLASS
+        // ========================================
 
-                        ? `
-                            <span class="status status-contacted">
-                                Đã liên hệ
-                            </span>
-                          `
+        let statusText = "";
+        let statusClass = "";
 
-                        : `
-                            <span class="status status-pending">
-                                Chưa liên hệ
-                            </span>
-                          `;
 
+        switch (order.contact_status) {
 
-                row.innerHTML = `
+            case "PENDING":
 
-                    <td>
+                statusText =
+                    "Chưa liên hệ";
 
-                        <span class="order-id">
-                            #${escapeHTML(order.id)}
-                        </span>
+                statusClass =
+                    "status-pending";
 
-                    </td>
+                break;
 
 
-                    <td>
+            case "CONTACTED":
 
-                        <div class="customer-name">
-                            ${escapeHTML(order.customer_name)}
-                        </div>
+                statusText =
+                    "Đã liên hệ";
 
-                        <div class="customer-phone">
-                            ${escapeHTML(order.phone)}
-                        </div>
+                statusClass =
+                    "status-contacted";
 
-                    </td>
+                break;
 
 
-                    <td>
+            case "PAID":
 
-                        <div class="address">
-                            ${escapeHTML(order.address)}
-                        </div>
+                statusText =
+                    "Đã nhận tiền";
 
-                    </td>
+                statusClass =
+                    "status-paid";
 
+                break;
 
-                    <td>
 
-                        ${productCount} sản phẩm
+            case "CANCELLED":
 
-                    </td>
+                statusText =
+                    "Đã hủy";
 
+                statusClass =
+                    "status-cancelled";
 
-                    <td>
+                break;
 
-                        <span class="order-total">
-                            ${formatMoney(order.total_amount)}
-                        </span>
 
-                    </td>
+            case "EXCHANGE":
 
+                statusText =
+                    "Đổi hàng";
 
-                    <td>
+                statusClass =
+                    "status-exchange";
 
-                        ${statusHTML}
+                break;
 
-                    </td>
 
+            case "RETURN":
 
-                    <td>
+                statusText =
+                    "Trả hàng";
 
-                        ${formatDate(order.created_at)}
+                statusClass =
+                    "status-return";
 
-                    </td>
+                break;
 
 
-                    <td>
+            default:
 
-                        <div class="order-action">
+                statusText =
+                    "Không xác định";
 
-                            <button
-                                class="btn-detail"
-                                onclick="toggleOrderDetail(${order.id})">
+                statusClass =
+                    "status-pending";
+        }
 
-                                Xem
 
-                            </button>
+        const statusHTML = `
 
+            <span class="status ${statusClass}">
+                ${statusText}
+            </span>
+
+        `;
+
+
+        // ========================================
+        // ACTION BUTTONS
+        // ========================================
+
+        let actionHTML = "";
+
+
+        // -----------------------------
+        // PENDING
+        // -----------------------------
+
+        if (
+            order.contact_status === "PENDING"
+        ) {
+
+            actionHTML = `
+
+                <button
+                    class="btn-contacted"
+                    onclick="updateOrderStatus(
+                        ${order.id},
+                        'CONTACTED'
+                    )">
+
+                    Đã liên hệ
+
+                </button>
+
+            `;
+        }
+
+
+        // -----------------------------
+        // CONTACTED
+        // -----------------------------
+
+        else if (
+            order.contact_status === "CONTACTED"
+        ) {
+
+            actionHTML = `
+
+                <button
+                    class="btn-cancel"
+                    onclick="updateOrderStatus(
+                        ${order.id},
+                        'CANCELLED'
+                    )">
+
+                    Hủy hàng
+
+                </button>
+
+
+                <button
+                    class="btn-paid"
+                    onclick="updateOrderStatus(
+                        ${order.id},
+                        'PAID'
+                    )">
+
+                    Đã nhận tiền
+
+                </button>
+
+            `;
+        }
+
+
+        // -----------------------------
+        // PAID
+        // -----------------------------
+
+        else if (
+            order.contact_status === "PAID"
+        ) {
+
+            actionHTML = `
+
+                <button
+                    class="btn-exchange"
+                    onclick="updateOrderStatus(
+                        ${order.id},
+                        'EXCHANGE'
+                    )">
+
+                    Đổi hàng
+
+                </button>
+
+
+                <button
+                    class="btn-return"
+                    onclick="updateOrderStatus(
+                        ${order.id},
+                        'RETURN'
+                    )">
+
+                    Trả hàng
+
+                </button>
+
+            `;
+        }
+
+
+        // -----------------------------
+        // EXCHANGE
+        // -----------------------------
+
+        else if (
+            order.contact_status === "EXCHANGE"
+        ) {
+
+            actionHTML = `
+
+                <span class="order-finished">
+                    Đang xử lý đổi hàng
+                </span>
+
+            `;
+        }
+
+
+        // -----------------------------
+        // RETURN
+        // -----------------------------
+
+        else if (
+            order.contact_status === "RETURN"
+        ) {
+
+            actionHTML = `
+
+                <span class="order-finished">
+                    Đang xử lý trả hàng
+                </span>
+
+            `;
+        }
+
+
+        // -----------------------------
+        // CANCELLED
+        // -----------------------------
+
+        else if (
+            order.contact_status === "CANCELLED"
+        ) {
+
+            actionHTML = `
+
+                <span class="order-finished">
+                    Đơn hàng đã hủy
+                </span>
+
+            `;
+        }
+
+
+        // ========================================
+        // MAIN ROW
+        // ========================================
+
+        row.innerHTML = `
+
+            <td>
+
+                <span class="order-id">
+                    #${escapeHTML(order.id)}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                <div class="customer-name">
+                    ${escapeHTML(order.customer_name)}
+                </div>
+
+                <div class="customer-phone">
+                    ${escapeHTML(order.phone)}
+                </div>
+
+            </td>
+
+
+            <td>
+
+                <div class="address">
+                    ${escapeHTML(order.address)}
+                </div>
+
+            </td>
+
+
+            <td>
+
+                ${productCount} sản phẩm
+
+            </td>
+
+
+            <td>
+
+                <span class="order-total">
+                    ${formatMoney(order.total_amount)}
+                </span>
+
+            </td>
+
+
+            <td>
+
+                ${statusHTML}
+
+            </td>
+
+
+            <td>
+
+                ${formatDate(order.created_at)}
+
+            </td>
+
+
+            <td>
+
+                <div class="order-action">
+
+                    <button
+                        class="btn-detail"
+                        onclick="toggleOrderDetail(${order.id})">
+
+                        Xem
+
+                    </button>
+
+
+                    ${actionHTML}
+
+                </div>
+
+            </td>
+
+        `;
+
+
+        tableBody.appendChild(row);
+
+
+        // ========================================
+        // DETAIL ROW
+        // ========================================
+
+        const detailRow =
+            document.createElement("tr");
+
+
+        detailRow.id =
+            `detail-${order.id}`;
+
+
+        detailRow.className =
+            "order-detail";
+
+
+        detailRow.innerHTML = `
+
+            <td colspan="8">
+
+                <div class="order-detail-box">
+
+                    <h3>
+                        Chi tiết đơn hàng #${escapeHTML(order.id)}
+                    </h3>
+
+
+                    <table class="order-items-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Sản phẩm</th>
+
+                                <th>Đơn giá</th>
+
+                                <th>Số lượng</th>
+
+                                <th>Thành tiền</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
 
                             ${
-                                status === "CONTACTED"
+                                order.items &&
+                                order.items.length > 0
 
-                                ? `
-
-                                    <button
-                                        class="btn-pending"
-                                        onclick="updateOrderStatus(
-                                            ${order.id},
-                                            'PENDING'
-                                        )">
-
-                                        Chưa liên hệ
-
-                                    </button>
-
-                                  `
-
-                                : `
-
-                                    <button
-                                        class="btn-contacted"
-                                        onclick="updateOrderStatus(
-                                            ${order.id},
-                                            'CONTACTED'
-                                        )">
-
-                                        Đã liên hệ
-
-                                    </button>
-
-                                  `
-                            }
-
-                        </div>
-
-                    </td>
-
-                `;
-
-
-                tableBody.appendChild(row);
-
-
-                // =========================
-                // DETAIL ROW
-                // =========================
-
-                const detailRow =
-                    document.createElement("tr");
-
-
-                detailRow.id =
-                    `detail-${order.id}`;
-
-
-                detailRow.className =
-                    "order-detail";
-
-
-                detailRow.innerHTML = `
-
-                    <td colspan="8">
-
-                        <div class="order-detail-box">
-
-                            <h3>
-                                Chi tiết đơn hàng #${escapeHTML(order.id)}
-                            </h3>
-
-
-                            <table class="order-items-table">
-
-                                <thead>
+                                ? order.items.map(item => `
 
                                     <tr>
 
-                                        <th>Sản phẩm</th>
+                                        <td>
+                                            ${escapeHTML(
+                                                item.product_name
+                                            )}
+                                        </td>
 
-                                        <th>Đơn giá</th>
+                                        <td>
+                                            ${formatMoney(
+                                                item.price
+                                            )}
+                                        </td>
 
-                                        <th>Số lượng</th>
+                                        <td>
+                                            ${item.quantity}
+                                        </td>
 
-                                        <th>Thành tiền</th>
+                                        <td>
+                                            ${formatMoney(
+                                                item.subtotal
+                                            )}
+                                        </td>
 
                                     </tr>
 
-                                </thead>
+                                `).join("")
+
+                                : `
+
+                                    <tr>
+
+                                        <td colspan="4">
+                                            Không có sản phẩm.
+                                        </td>
+
+                                    </tr>
+
+                                `
+                            }
+
+                        </tbody>
+
+                    </table>
 
 
-                                <tbody>
+                    <div class="order-detail-total">
 
-                                    ${
-                                        order.items &&
-                                        order.items.length > 0
+                        Tổng tiền:
+                        ${formatMoney(order.total_amount)}
 
-                                        ? order.items.map(item => `
+                    </div>
 
-                                            <tr>
+                </div>
 
-                                                <td>
-                                                    ${escapeHTML(item.product_name)}
-                                                </td>
+            </td>
 
-                                                <td>
-                                                    ${formatMoney(item.price)}
-                                                </td>
-
-                                                <td>
-                                                    ${item.quantity}
-                                                </td>
-
-                                                <td>
-                                                    ${formatMoney(item.subtotal)}
-                                                </td>
-
-                                            </tr>
-
-                                        `).join("")
-
-                                        : `
-
-                                            <tr>
-
-                                                <td colspan="4">
-                                                    Không có sản phẩm.
-                                                </td>
-
-                                            </tr>
-
-                                          `
-                                    }
-
-                                </tbody>
-
-                            </table>
+        `;
 
 
-                            <div class="order-detail-total">
+        tableBody.appendChild(detailRow);
 
-                                Tổng tiền:
-                                ${formatMoney(order.total_amount)}
+    });
 
-                            </div>
-
-                        </div>
-
-                    </td>
-
-                `;
-
-
-                tableBody.appendChild(detailRow);
-
-            });
-
-        }
+}
 
 
         // =========================
@@ -986,79 +1259,119 @@
         // =========================
 
         async function updateOrderStatus(
-            orderId,
-            contactStatus
-        ) {
+    orderId,
+    contactStatus
+) {
 
-            try {
+    const confirmMessages = {
 
-                const response =
-                    await fetch(
-                        `${API_URL}/api/admin/orders/${orderId}/status`,
-                        {
-                            method: "PATCH",
+        CONTACTED:
+            "Bạn xác nhận đã liên hệ với khách hàng?",
 
-                            headers: {
+        PAID:
+            "Bạn xác nhận đã nhận tiền từ khách hàng?",
 
-                                "Content-Type":
-                                    "application/json",
+        CANCELLED:
+            "Bạn xác nhận HỦY đơn hàng này?",
 
-                                Authorization:
-                                    `Bearer ${adminToken}`
+        EXCHANGE:
+            "Bạn xác nhận khách yêu cầu ĐỔI hàng?",
 
-                            },
-
-                            body: JSON.stringify({
-                                contactStatus:
-                                    contactStatus
-                            })
-
-                        }
-                    );
+        RETURN:
+            "Bạn xác nhận khách yêu cầu TRẢ hàng?"
+    };
 
 
-                if (response.status === 401) {
+    const message =
+        confirmMessages[contactStatus] ||
+        "Bạn có chắc muốn thay đổi trạng thái đơn hàng?";
 
-                    localStorage.removeItem("adminToken");
-                    localStorage.removeItem("adminEmail");
 
-                    window.location.href =
-                        "login.html";
+    if (!confirm(message)) {
+        return;
+    }
 
-                    return;
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/api/admin/orders/${orderId}/status`,
+                {
+                    method: "PATCH",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        Authorization:
+                            `Bearer ${adminToken}`
+
+                    },
+
+                    body: JSON.stringify({
+
+                        contactStatus:
+                            contactStatus
+
+                    })
 
                 }
+            );
 
 
-                const data =
-                    await response.json();
+        if (response.status === 401) {
 
+            localStorage.removeItem(
+                "adminToken"
+            );
 
-                if (!response.ok) {
+            localStorage.removeItem(
+                "adminEmail"
+            );
 
-                    alert(
-                        data.message ||
-                        "Cập nhật trạng thái thất bại."
-                    );
+            window.location.href =
+                "login.html";
 
-                    return;
-
-                }
-
-
-                loadOrders();
-
-            } catch (error) {
-
-                console.error(error);
-
-                alert(
-                    "Không thể kết nối tới server!"
-                );
-
-            }
+            return;
 
         }
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Cập nhật trạng thái thất bại."
+            );
+
+            return;
+
+        }
+
+
+        loadOrders();
+
+
+    } catch (error) {
+
+        console.error(
+            "Update order status error:",
+            error
+        );
+
+        alert(
+            "Không thể kết nối tới server!"
+        );
+
+    }
+
+}
 
 
         // =========================

@@ -938,10 +938,16 @@ app.get("/api/admin/orders", requireAdmin, async (req, res) => {
                 created_at
             FROM public.orders
             ORDER BY
-                CASE
-                    WHEN contact_status = 'PENDING' THEN 0
-                    ELSE 1
-                END,
+    CASE
+        WHEN contact_status = 'PENDING' THEN 0
+        WHEN contact_status = 'CONTACTED' THEN 1
+        WHEN contact_status = 'PAID' THEN 2
+        WHEN contact_status = 'EXCHANGE' THEN 3
+        WHEN contact_status = 'RETURN' THEN 4
+        WHEN contact_status = 'CANCELLED' THEN 5
+        ELSE 6
+    END,
+    created_at DESC
                 created_at DESC
         `);
 
@@ -1001,34 +1007,30 @@ app.patch(
     "/api/admin/orders/:id/status",
     requireAdmin,
     async (req, res) => {
-
         try {
-
             const orderId = Number(req.params.id);
-
             const { contactStatus } = req.body;
 
-
             if (!orderId) {
-
                 return res.status(400).json({
                     message: "Order ID không hợp lệ."
                 });
-
             }
 
+            const allowedStatuses = [
+                "PENDING",
+                "CONTACTED",
+                "PAID",
+                "CANCELLED",
+                "EXCHANGE",
+                "RETURN"
+            ];
 
-            if (
-                contactStatus !== "PENDING" &&
-                contactStatus !== "CONTACTED"
-            ) {
-
+            if (!allowedStatuses.includes(contactStatus)) {
                 return res.status(400).json({
                     message: "Trạng thái không hợp lệ."
                 });
-
             }
-
 
             const result = await pool.query(`
                 UPDATE public.orders
@@ -1040,21 +1042,16 @@ app.patch(
                 orderId
             ]);
 
-
             if (result.rows.length === 0) {
-
                 return res.status(404).json({
                     message: "Không tìm thấy đơn hàng."
                 });
-
             }
-
 
             res.json({
                 message: "Cập nhật trạng thái đơn hàng thành công.",
                 order: result.rows[0]
             });
-
 
         } catch (error) {
 
@@ -1067,9 +1064,7 @@ app.patch(
                 message: "Không thể cập nhật trạng thái đơn hàng.",
                 error: error.message
             });
-
         }
-
     }
 );
 
@@ -1480,32 +1475,3 @@ app.get("/api/products/:id", async (req, res) => {
 
 
 
-app.get("/api/test-db", async (req, res) => {
-    try {
-        const result = await pool.query(`
-            SELECT
-                current_database() AS database_name,
-                current_user AS user_name
-        `);
-
-        const tables = await pool.query(`
-            SELECT table_name
-            FROM information_schema.tables
-            WHERE table_schema = 'public'
-            ORDER BY table_name
-        `);
-
-        res.json({
-            database: result.rows[0],
-            tables: tables.rows
-        });
-
-    } catch (error) {
-        console.error("Test DB error:", error);
-
-        res.status(500).json({
-            message: "Không kiểm tra được database.",
-            error: error.message
-        });
-    }
-});
