@@ -61,7 +61,7 @@ if (text) {
                     localStorage.removeItem("adminLoggedIn");
 
                     window.location.href =
-                        "dashboard.html";
+                        "index.html";
                 }
             );
         }
