@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ========================================
 
     if (adminToken && adminEmail) {
-
+        
         // Đổi "Tài khoản" thành "Admin"
         const accountLink =
             document.getElementById("accountLink");
@@ -41,6 +41,11 @@ if (text) {
         if (cartLink) {
             cartLink.style.display = "none";
         }
+
+        // Ẩn nút Thêm vào giỏ hàng
+    document.querySelectorAll(".add-to-cart").forEach(button => {
+        button.style.display = "none";
+    });
 
         // Hiện nút đăng xuất nếu có
         const logoutLink =
