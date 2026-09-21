@@ -918,6 +918,161 @@ function requireAdmin(req, res, next) {
     }
 }   
 
+// ========================================
+// ADMIN - GET ALL ORDERS
+// ========================================
+
+app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+
+    try {
+
+        // Lấy danh sách đơn hàng
+        const ordersResult = await pool.query(`
+            SELECT
+                id,
+                customer_name,
+                phone,
+                address,
+                total_amount,
+                contact_status,
+                created_at
+            FROM public.orders
+            ORDER BY
+                CASE
+                    WHEN contact_status = 'PENDING' THEN 0
+                    ELSE 1
+                END,
+                created_at DESC
+        `);
+
+
+        // Lấy sản phẩm của từng đơn
+        const orders = [];
+
+        for (const order of ordersResult.rows) {
+
+            const itemsResult = await pool.query(`
+                SELECT
+                    id,
+                    product_id,
+                    product_name,
+                    price,
+                    quantity,
+                    subtotal
+                FROM public.order_items
+                WHERE order_id = $1
+                ORDER BY id
+            `, [order.id]);
+
+
+            orders.push({
+                ...order,
+                items: itemsResult.rows
+            });
+        }
+
+
+        res.json({
+            message: "Lấy danh sách đơn hàng thành công.",
+            orders: orders
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Get admin orders error:",
+            error
+        );
+
+        res.status(500).json({
+            message: "Không thể lấy danh sách đơn hàng.",
+            error: error.message
+        });
+    }
+
+});
+
+// ========================================
+// ADMIN - UPDATE ORDER CONTACT STATUS
+// ========================================
+
+app.patch(
+    "/api/admin/orders/:id/status",
+    requireAdmin,
+    async (req, res) => {
+
+        try {
+
+            const orderId = Number(req.params.id);
+
+            const { contactStatus } = req.body;
+
+
+            if (!orderId) {
+
+                return res.status(400).json({
+                    message: "Order ID không hợp lệ."
+                });
+
+            }
+
+
+            if (
+                contactStatus !== "PENDING" &&
+                contactStatus !== "CONTACTED"
+            ) {
+
+                return res.status(400).json({
+                    message: "Trạng thái không hợp lệ."
+                });
+
+            }
+
+
+            const result = await pool.query(`
+                UPDATE public.orders
+                SET contact_status = $1
+                WHERE id = $2
+                RETURNING *
+            `, [
+                contactStatus,
+                orderId
+            ]);
+
+
+            if (result.rows.length === 0) {
+
+                return res.status(404).json({
+                    message: "Không tìm thấy đơn hàng."
+                });
+
+            }
+
+
+            res.json({
+                message: "Cập nhật trạng thái đơn hàng thành công.",
+                order: result.rows[0]
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Update order status error:",
+                error
+            );
+
+            res.status(500).json({
+                message: "Không thể cập nhật trạng thái đơn hàng.",
+                error: error.message
+            });
+
+        }
+
+    }
+);
+
 // =========================
 // TEST SERVER
 // =========================

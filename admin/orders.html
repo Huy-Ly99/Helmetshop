@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Đơn hàng - HelmetShop</title>
+
+    <link rel="stylesheet" href="../css/admin.css">
+
+    <style>
+
+        /* =========================
+           ORDER PAGE
+        ========================= */
+
+        .order-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .order-stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .order-stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #f1f5f9;
+        }
+
+        .order-stat-card p {
+            margin: 0 0 5px;
+            color: #666;
+        }
+
+        .order-stat-card h2 {
+            margin: 0;
+        }
+
+        /* =========================
+           ORDER TABLE
+        ========================= */
+
+        .order-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-table th,
+        .order-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .order-table th {
+            font-weight: 600;
+            background: #f8fafc;
+        }
+
+        .order-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .order-id {
+            font-weight: 600;
+        }
+
+        .customer-name {
+            font-weight: 600;
+        }
+
+        .customer-phone {
+            color: #666;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+
+        .address {
+            max-width: 250px;
+            line-height: 1.5;
+        }
+
+        .order-total {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-contacted {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .order-action {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .order-action button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-detail {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-contacted {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-pending {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        /* =========================
+           DETAIL
+        ========================= */
+
+        .order-detail {
+            display: none;
+            background: #f8fafc;
+            padding: 20px;
+        }
+
+        .order-detail.active {
+            display: table-row;
+        }
+
+        .order-detail-box {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .order-detail-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .order-items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-items-table th,
+        .order-items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .order-items-table th {
+            background: #f8fafc;
+        }
+
+        .order-detail-total {
+            text-align: right;
+            margin-top: 15px;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+
+            .order-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .order-stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="admin-logo">
+            🪖 Helmet<span>Shop</span>
+        </div>
+
+        <div class="admin-label">
+            ADMIN PANEL
+        </div>
+
+        <nav class="admin-menu">
+
+            <a href="dashboard.html" class="menu-item">
+                📊
+                <span>Tổng quan</span>
+            </a>
+
+            <a href="dashboard.html" class="menu-item">
+                🪖
+                <span>Sản phẩm</span>
+            </a>
+
+            <a href="orders.html" class="menu-item active">
+                📦
+                <span>Đơn hàng</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                👥
+                <span>Khách hàng</span>
+            </a>
+
+            <a href="#" class="menu-item">
+                📈
+                <span>Thống kê</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="../index.html" class="menu-item">
+                🏠
+                <span>Trang chủ</span>
+            </a>
+
+            <button class="logout-button" onclick="logout()">
+                🚪
+                <span>Đăng xuất</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+        <!-- HEADER -->
+
+        <header class="admin-header">
+
+            <div>
+
+                <h1>Đơn hàng</h1>
+
+                <p>
+                    Quản lý và theo dõi đơn hàng của khách hàng.
+                </p>
+
+            </div>
+
+            <div class="admin-account">
+
+                👤
+
+                <span id="adminEmail"></span>
+
+            </div>
+
+        </header>
+
+
+        <!-- STATISTICS -->
+
+        <section class="order-stats">
+
+            <div class="order-stat-card">
+
+                <div class="order-stat-icon">
+                    📦
+                </div>
+
+                <div>
+
+                    <p>Tổng đơn hàng</p>
+
+                    <h2 id="totalOrders">0</h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-stat-card">
+
+                <div class="order-stat-icon">
+                    📞
+                </div>
+
+                <div>
+
+                    <p>Chưa liên hệ</p>
+
+                    <h2 id="pendingOrders">0</h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-stat-card">
+
+                <div class="order-stat-icon">
+                    ✅
+                </div>
+
+                <div>
+
+                    <p>Đã liên hệ</p>
+
+                    <h2 id="contactedOrders">0</h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-stat-card">
+
+                <div class="order-stat-icon">
+                    💰
+                </div>
+
+                <div>
+
+                    <p>Doanh thu</p>
+
+                    <h2 id="totalRevenue">0đ</h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ORDER MANAGEMENT -->
+
+        <section class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Danh sách đơn hàng</h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-table-container">
+
+                <table class="order-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Khách hàng</th>
+
+                            <th>Địa chỉ</th>
+
+                            <th>Sản phẩm</th>
+
+                            <th>Tổng tiền</th>
+
+                            <th>Trạng thái</th>
+
+                            <th>Ngày đặt</th>
+
+                            <th>Thao tác</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="orderTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        const API_URL =
+            "https://helmetshop-api.onrender.com";
+
+
+        const adminToken =
+            localStorage.getItem("adminToken");
+
+
+        // =========================
+        // CHECK LOGIN
+        // =========================
+
+        if (!adminToken) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        // =========================
+        // ADMIN EMAIL
+        // =========================
+
+        const adminEmail =
+            localStorage.getItem("adminEmail");
+
+
+        document.getElementById("adminEmail").textContent =
+            adminEmail || "admin@helmetshop.com";
+
+
+        // =========================
+        // FORMAT MONEY
+        // =========================
+
+        function formatMoney(value) {
+
+            return Number(value || 0)
+                .toLocaleString("vi-VN") + "đ";
+
+        }
+
+
+        // =========================
+        // ESCAPE HTML
+        // =========================
+
+        function escapeHTML(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // =========================
+        // FORMAT DATE
+        // =========================
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "";
+            }
+
+            return new Date(value)
+                .toLocaleString("vi-VN");
+
+        }
+
+
+        // =========================
+        // LOAD ORDERS
+        // =========================
+
+        async function loadOrders() {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/admin/orders`,
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${adminToken}`
+                            }
+                        }
+                    );
+
+
+                if (response.status === 401) {
+
+                    localStorage.removeItem("adminToken");
+                    localStorage.removeItem("adminEmail");
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        "Không thể tải đơn hàng."
+                    );
+
+                    return;
+                }
+
+
+                renderOrders(data.orders || []);
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Không thể kết nối tới server!"
+                );
+
+            }
+
+        }
+
+
+        // =========================
+        // RENDER ORDERS
+        // =========================
+
+        function renderOrders(orders) {
+
+            const tableBody =
+                document.getElementById(
+                    "orderTableBody"
+                );
+
+
+            tableBody.innerHTML = "";
+
+
+            // Thống kê
+
+            const totalOrders =
+                orders.length;
+
+
+            const pendingOrders =
+                orders.filter(
+                    order =>
+                        order.contact_status === "PENDING"
+                ).length;
+
+
+            const contactedOrders =
+                orders.filter(
+                    order =>
+                        order.contact_status === "CONTACTED"
+                ).length;
+
+
+            const totalRevenue =
+                orders.reduce(
+                    (sum, order) =>
+                        sum + Number(order.total_amount || 0),
+                    0
+                );
+
+
+            document.getElementById(
+                "totalOrders"
+            ).textContent = totalOrders;
+
+
+            document.getElementById(
+                "pendingOrders"
+            ).textContent = pendingOrders;
+
+
+            document.getElementById(
+                "contactedOrders"
+            ).textContent = contactedOrders;
+
+
+            document.getElementById(
+                "totalRevenue"
+            ).textContent =
+                formatMoney(totalRevenue);
+
+
+            // Không có đơn
+
+            if (orders.length === 0) {
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-orders">
+                                Chưa có đơn hàng nào.
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            orders.forEach(order => {
+
+                const row =
+                    document.createElement("tr");
+
+
+                const productCount =
+                    order.items
+                        ? order.items.length
+                        : 0;
+
+
+                const status =
+                    order.contact_status === "CONTACTED"
+                        ? "CONTACTED"
+                        : "PENDING";
+
+
+                const statusHTML =
+                    status === "CONTACTED"
+
+                        ? `
+                            <span class="status status-contacted">
+                                Đã liên hệ
+                            </span>
+                          `
+
+                        : `
+                            <span class="status status-pending">
+                                Chưa liên hệ
+                            </span>
+                          `;
+
+
+                row.innerHTML = `
+
+                    <td>
+
+                        <span class="order-id">
+                            #${escapeHTML(order.id)}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="customer-name">
+                            ${escapeHTML(order.customer_name)}
+                        </div>
+
+                        <div class="customer-phone">
+                            ${escapeHTML(order.phone)}
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="address">
+                            ${escapeHTML(order.address)}
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        ${productCount} sản phẩm
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="order-total">
+                            ${formatMoney(order.total_amount)}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${statusHTML}
+
+                    </td>
+
+
+                    <td>
+
+                        ${formatDate(order.created_at)}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="order-action">
+
+                            <button
+                                class="btn-detail"
+                                onclick="toggleOrderDetail(${order.id})">
+
+                                Xem
+
+                            </button>
+
+
+                            ${
+                                status === "CONTACTED"
+
+                                ? `
+
+                                    <button
+                                        class="btn-pending"
+                                        onclick="updateOrderStatus(
+                                            ${order.id},
+                                            'PENDING'
+                                        )">
+
+                                        Chưa liên hệ
+
+                                    </button>
+
+                                  `
+
+                                : `
+
+                                    <button
+                                        class="btn-contacted"
+                                        onclick="updateOrderStatus(
+                                            ${order.id},
+                                            'CONTACTED'
+                                        )">
+
+                                        Đã liên hệ
+
+                                    </button>
+
+                                  `
+                            }
+
+                        </div>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(row);
+
+
+                // =========================
+                // DETAIL ROW
+                // =========================
+
+                const detailRow =
+                    document.createElement("tr");
+
+
+                detailRow.id =
+                    `detail-${order.id}`;
+
+
+                detailRow.className =
+                    "order-detail";
+
+
+                detailRow.innerHTML = `
+
+                    <td colspan="8">
+
+                        <div class="order-detail-box">
+
+                            <h3>
+                                Chi tiết đơn hàng #${escapeHTML(order.id)}
+                            </h3>
+
+
+                            <table class="order-items-table">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>Sản phẩm</th>
+
+                                        <th>Đơn giá</th>
+
+                                        <th>Số lượng</th>
+
+                                        <th>Thành tiền</th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody>
+
+                                    ${
+                                        order.items &&
+                                        order.items.length > 0
+
+                                        ? order.items.map(item => `
+
+                                            <tr>
+
+                                                <td>
+                                                    ${escapeHTML(item.product_name)}
+                                                </td>
+
+                                                <td>
+                                                    ${formatMoney(item.price)}
+                                                </td>
+
+                                                <td>
+                                                    ${item.quantity}
+                                                </td>
+
+                                                <td>
+                                                    ${formatMoney(item.subtotal)}
+                                                </td>
+
+                                            </tr>
+
+                                        `).join("")
+
+                                        : `
+
+                                            <tr>
+
+                                                <td colspan="4">
+                                                    Không có sản phẩm.
+                                                </td>
+
+                                            </tr>
+
+                                          `
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+
+                            <div class="order-detail-total">
+
+                                Tổng tiền:
+                                ${formatMoney(order.total_amount)}
+
+                            </div>
+
+                        </div>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(detailRow);
+
+            });
+
+        }
+
+
+        // =========================
+        // SHOW / HIDE DETAIL
+        // =========================
+
+        function toggleOrderDetail(orderId) {
+
+            const row =
+                document.getElementById(
+                    `detail-${orderId}`
+                );
+
+
+            if (!row) {
+                return;
+            }
+
+
+            row.classList.toggle("active");
+
+        }
+
+
+        // =========================
+        // UPDATE STATUS
+        // =========================
+
+        async function updateOrderStatus(
+            orderId,
+            contactStatus
+        ) {
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/admin/orders/${orderId}/status`,
+                        {
+                            method: "PATCH",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                Authorization:
+                                    `Bearer ${adminToken}`
+
+                            },
+
+                            body: JSON.stringify({
+                                contactStatus:
+                                    contactStatus
+                            })
+
+                        }
+                    );
+
+
+                if (response.status === 401) {
+
+                    localStorage.removeItem("adminToken");
+                    localStorage.removeItem("adminEmail");
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    alert(
+                        data.message ||
+                        "Cập nhật trạng thái thất bại."
+                    );
+
+                    return;
+
+                }
+
+
+                loadOrders();
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Không thể kết nối tới server!"
+                );
+
+            }
+
+        }
+
+
+        // =========================
+        // LOGOUT
+        // =========================
+
+        function logout() {
+
+            localStorage.removeItem(
+                "adminToken"
+            );
+
+            localStorage.removeItem(
+                "adminEmail"
+            );
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        // =========================
+        // START
+        // =========================
+
+        loadOrders();
+
+    </script>
+
+</body>
+
+</html>
