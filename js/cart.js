@@ -696,3 +696,152 @@ function closeCheckoutModal() {
         modal.classList.remove("show");
     }
 }
+
+
+async function submitOrder() {
+
+    const customerName =
+        document.getElementById("customerName").value.trim();
+
+    const phone =
+        document.getElementById("customerPhone").value.trim();
+
+    const address =
+        document.getElementById("customerAddress").value.trim();
+
+
+    // =========================
+    // KIỂM TRA THÔNG TIN
+    // =========================
+
+    if (!customerName || !phone || !address) {
+
+        alert("Vui lòng nhập đầy đủ thông tin.");
+
+        return;
+    }
+
+
+    // =========================
+    // LẤY CART TOKEN
+    // =========================
+
+    const cartToken =
+        localStorage.getItem("helmetHopCartToken");
+
+
+    if (!cartToken) {
+
+        alert("Không tìm thấy giỏ hàng.");
+
+        return;
+    }
+
+
+    try {
+
+        // =========================
+        // GỌI API TẠO ĐƠN
+        // =========================
+
+        const response =
+            await fetch(
+                `${API_URL}/api/orders`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        customerName:
+                            customerName,
+
+                        phone:
+                            phone,
+
+                        address:
+                            address,
+
+                        cartToken:
+                            cartToken
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Create order response:",
+            data
+        );
+
+
+        // =========================
+        // API ERROR
+        // =========================
+
+        if (!response.ok) {
+
+            alert(
+                data.message ||
+                "Đặt hàng thất bại."
+            );
+
+            return;
+        }
+
+
+        // =========================
+        // ĐẶT HÀNG THÀNH CÔNG
+        // =========================
+
+        alert(
+            `Đặt hàng thành công!\n\nMã đơn hàng: #${data.order.id}`
+        );
+
+
+        // =========================
+        // ĐÓNG MODAL
+        // =========================
+
+        closeCheckoutModal();
+
+
+        // =========================
+        // XÓA CART TOKEN
+        // =========================
+
+        localStorage.removeItem(
+            "helmetHopCartToken"
+        );
+
+
+        // =========================
+        // VỀ TRANG CHỦ
+        // =========================
+
+        window.location.href =
+            "index.html";
+
+
+    } catch (error) {
+
+        console.error(
+            "Submit order error:",
+            error
+        );
+
+        alert(
+            "Không thể kết nối tới server!"
+        );
+
+    }
+
+}
