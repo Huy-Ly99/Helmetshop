@@ -959,69 +959,6 @@ switch (order.contact_status) {
         `;
 
 
-
-        // -----------------------------
-        // PENDING
-        // -----------------------------
-
-        if (
-            order.contact_status === "PENDING"
-        ) {
-
-            actionHTML = `
-
-                <button
-                    class="btn-contacted"
-                    onclick="updateOrderStatus(
-                        ${order.id},
-                        'CONTACTED'
-                    )">
-
-                    Đã liên hệ
-
-                </button>
-
-            `;
-        }
-
-
-        // -----------------------------
-        // CONTACTED
-        // -----------------------------
-
-        else if (
-            order.contact_status === "CONTACTED"
-        ) {
-
-            actionHTML = `
-
-                <button
-                    class="btn-cancel"
-                    onclick="updateOrderStatus(
-                        ${order.id},
-                        'CANCELLED'
-                    )">
-
-                    Hủy hàng
-
-                </button>
-
-
-                <button
-                    class="btn-paid"
-                    onclick="updateOrderStatus(
-                        ${order.id},
-                        'PAID'
-                    )">
-
-                    Đã nhận tiền
-
-                </button>
-
-            `;
-        }
-
-
        
 
 

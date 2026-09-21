@@ -1023,7 +1023,8 @@ app.patch(
                 "PAID",
                 "CANCELLED",
                 "EXCHANGE",
-                "RETURN"
+                "RETURN",
+                "REFUNDED"
             ];
 
             if (!allowedStatuses.includes(contactStatus)) {
