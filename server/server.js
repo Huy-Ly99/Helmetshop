@@ -1215,7 +1215,7 @@ app.post("/api/admin/orders/:id/restore-stock", async (req, res) => {
             UPDATE public.orders
             SET
                 stock_restored = TRUE,
-                contact_status = 'RETURNED'
+    
             WHERE id = $1
             `,
             [orderId]
