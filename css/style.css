@@ -1887,7 +1887,7 @@ z-index: 9999;
     padding: 12px 15px;
 
     cursor: pointer;
-
+    z-index: 9999   ;
     border-bottom: 1px solid #eee;
 
     transition: background 0.2s;
