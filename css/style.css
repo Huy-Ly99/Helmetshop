@@ -80,8 +80,14 @@ button {
     height: 42px;
     border: 1px solid #ddd;
     border-radius: 25px;
-    overflow: hidden;
+
+    /* QUAN TRỌNG */
+    overflow: visible;
+
+    position: relative;
+    z-index: 9999;
 }
+
 
 .search-box input {
     flex: 1;
