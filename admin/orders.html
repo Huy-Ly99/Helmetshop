@@ -262,6 +262,25 @@
             color: #777;
         }
 
+        .btn-restore-stock {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-restore-stock:hover {
+    opacity: 0.85;
+}
+
+.status-returned {
+    background: #dcfce7;
+    color: #166534;
+}
+
         /* =====================================================
    ORDERS RESPONSIVE
 ===================================================== */
@@ -1264,19 +1283,32 @@ switch (order.contact_status) {
 
 
     case "RETURN":
-        statusText = "Đã nhận hàng trả";
-        statusClass = "status-return";
+    statusText = "Trả hàng";
+    statusClass = "status-return";
 
-        actionHTML = `
-            <button
-                class="btn-refund"
-                onclick="updateOrderStatus(${order.id}, 'REFUNDED')"
-            >
-                Hoàn tiền
-            </button>
-        `;
-        break;
+    actionHTML = `
+        <button
+            class="btn-restore-stock"
+            onclick="restoreOrderStock(${order.id})"
+        >
+            Đã về kho
+        </button>
+    `;
+    break;
 
+    case "RETURNED":
+    statusText = "Đã về kho";
+    statusClass = "status-returned";
+
+    actionHTML = `
+        <button
+            class="btn-paid"
+            onclick="updateOrderStatus(${order.id}, 'REFUNDED')"
+        >
+            Hoàn tiền
+        </button>
+    `;
+    break;
 
     case "REFUNDED":
         statusText = "Đã hoàn tiền";
@@ -1295,23 +1327,18 @@ switch (order.contact_status) {
 
 
     case "CANCELLED":
-        statusText = "Đã hủy";
-        statusClass = "status-cancelled";
+    statusText = "Đã hủy";
+    statusClass = "status-cancelled";
 
-        actionHTML = `
-            <span class="order-finished">
-                Đơn hàng đã hủy
-            </span>
-
-            <button
-            class="btn-delete"
-            onclick="deleteOrder(${order.id}, 'CANCELLED')"
-            title="Xóa đơn hàng"
+    actionHTML = `
+        <button
+            class="btn-restore-stock"
+            onclick="restoreOrderStock(${order.id})"
         >
-            ✕
+            Đã về kho
         </button>
-        `;
-        break;
+    `;
+    break;
 
 
     default:
@@ -1567,6 +1594,56 @@ switch (order.contact_status) {
 
         }
 
+        async function restoreOrderStock(orderId) {
+    const confirmed = confirm(
+        "Xác nhận sản phẩm của đơn hàng này đã về kho?\n\n" +
+        "Sau khi xác nhận, số lượng sản phẩm sẽ được cộng lại vào kho."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    const adminToken = localStorage.getItem("adminToken");
+
+    if (!adminToken) {
+        alert("Phiên đăng nhập Admin đã hết. Vui lòng đăng nhập lại.");
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/api/admin/orders/${orderId}/restore-stock`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${adminToken}`,
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.message || "Không thể hoàn kho."
+            );
+        }
+
+        alert("Đã xác nhận hàng về kho.");
+
+        await loadOrders();
+
+    } catch (error) {
+        console.error("Lỗi hoàn kho:", error);
+
+        alert(
+            error.message ||
+            "Có lỗi xảy ra khi xác nhận hàng về kho."
+        );
+    }
+}
 
         // =========================
         // UPDATE STATUS
@@ -1583,7 +1660,7 @@ switch (order.contact_status) {
         PAID: "Bạn xác nhận đã nhận tiền từ khách hàng?",
         CANCELLED: "Bạn xác nhận HỦY đơn hàng này?",
         EXCHANGE: "Bạn xác nhận khách yêu cầu ĐỔI hàng?",
-        RETURN: "Bạn xác nhận đã NHẬN LẠI HÀNG từ khách?",
+        RETURN: "Bạn xác nhận khách yêu cầu TRẢ HÀNG?",
         REFUNDED: "Bạn xác nhận đã HOÀN TIỀN cho khách hàng?"
     };
 
