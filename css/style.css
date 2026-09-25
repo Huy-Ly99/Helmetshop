@@ -1867,7 +1867,7 @@ button {
     top: calc(100% + 5px);
     left: 0;
     right: 0;
-
+z-index: 9999;
     background: white;
 
     border: 1px solid #ddd;
