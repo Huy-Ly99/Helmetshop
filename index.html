@@ -534,11 +534,19 @@ if (product.image) {
                         onclick="viewProduct(${product.id})"
                     >
 
-                        <div class="product-image">
+                        
+<div class="product-image">
 
-                            ${imageHTML}
+    ${imageHTML}
 
-                        </div>
+    ${
+        Number(product.stock) === 0
+            ? `<div class="out-of-stock">ĐÃ HẾT HÀNG</div>`
+            : ""
+    }
+
+</div>
+
 
 
                         <div class="product-info">

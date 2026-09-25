@@ -379,7 +379,11 @@ if (product.image) {
 
                                     ${imageHTML}
 
-
+                                    ${
+        Number(product.stock) === 0
+            ? `<div class="out-of-stock">ĐÃ HẾT HÀNG</div>`
+            : ""
+    }
                                     <button
                                         class="heart">
 
