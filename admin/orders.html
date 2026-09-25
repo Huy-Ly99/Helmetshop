@@ -1637,6 +1637,8 @@ switch (order.contact_status) {
 
     } catch (error) {
         console.error("Lỗi hoàn kho:", error);
+        console.error("SQL position:", error.position);
+console.error("SQL message:", error.message);
 
         alert(
             error.message ||
