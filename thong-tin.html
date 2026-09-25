@@ -1,0 +1,844 @@
+```html
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Thông tin & Hỗ trợ - HelmetShop</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* ==============================
+           INFORMATION PAGE
+        ============================== */
+
+        .info-page {
+            padding: 50px 0 70px;
+            background: #f8f8f8;
+            min-height: 600px;
+        }
+
+        .info-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .info-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .info-title h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .info-title p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .info-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* SIDEBAR */
+
+        .info-sidebar {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-sidebar h3 {
+            margin: 0;
+            padding: 18px 20px;
+            background: #111;
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .info-sidebar a {
+            display: block;
+            padding: 14px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+            transition: 0.2s;
+        }
+
+        .info-sidebar a:hover {
+            background: #f5f5f5;
+            color: #d71920;
+        }
+
+        /* CONTENT */
+
+        .info-content {
+            background: #fff;
+            border-radius: 10px;
+            padding: 35px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-section {
+            margin-bottom: 45px;
+            scroll-margin-top: 100px;
+        }
+
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-section h2 {
+            font-size: 25px;
+            margin-bottom: 15px;
+            color: #222;
+            border-left: 4px solid #d71920;
+            padding-left: 12px;
+        }
+
+        .info-section h3 {
+            font-size: 18px;
+            margin: 25px 0 10px;
+        }
+
+        .info-section p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .info-section ul {
+            padding-left: 22px;
+            color: #555;
+            line-height: 1.9;
+        }
+
+        .info-section li {
+            margin-bottom: 6px;
+        }
+
+        .contact-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .contact-box p {
+            margin-bottom: 8px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 768px) {
+
+            .info-page {
+                padding: 30px 0 50px;
+            }
+
+            .info-title h1 {
+                font-size: 26px;
+            }
+
+            .info-layout {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .info-sidebar {
+                position: static;
+            }
+
+            .info-content {
+                padding: 22px;
+            }
+
+            .info-section h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==============================
+         HEADER
+    ============================== -->
+
+    <header class="header">
+
+        <div class="container header-content">
+
+            <!-- LOGO -->
+            <a href="index.html" class="logo">
+
+                <span class="logo-icon">🪖</span>
+
+                <span>
+                    Helmet<span class="logo-highlight">Shop</span>
+                </span>
+
+            </a>
+
+
+            <!-- SEARCH -->
+            <div class="search-box">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Tìm kiếm nón bảo hiểm..."
+                >
+
+                <button onclick="searchProduct()">
+                    🔍
+                </button>
+
+            </div>
+
+
+            <!-- HEADER ACTION -->
+            <div class="header-actions">
+
+                <a id="accountLink" href="admin/login.html">
+
+                    <img
+                        id="adminAvatar"
+                        src="images/admin-avatar.jpg"
+                        alt="Admin"
+                        style="display: none;"
+                    >
+
+                    <span>Tài khoản</span>
+
+                </a>
+
+
+                <a
+                    id="logoutLink"
+                    onclick="logout()"
+                    style="display: none; cursor: pointer;"
+                >
+                    🚪
+                    <span>Đăng xuất</span>
+                </a>
+
+
+                <a id="cartLink" href="cart.html" class="cart">
+
+                    🛒
+
+                    <span>Giỏ hàng</span>
+
+                    <b id="cartCount">0</b>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="navbar">
+
+            <div class="container nav-content">
+
+                <a href="index.html">
+                    Trang chủ
+                </a>
+
+                <a href="non-bao-hiem.html">
+                    Nón bảo hiểm
+                </a>
+
+                <a href="non-3-phan-4.html">
+                    Nón 3/4
+                </a>
+
+                <a href="non-fullface.html">
+                    Nón Fullface
+                </a>
+
+                <a href="non-nua-dau.html">
+                    Nón nửa đầu
+                </a>
+
+                <a href="phu-kien.html">
+                    Phụ kiện
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- ==============================
+         MAIN CONTENT
+    ============================== -->
+
+    <main>
+
+        <section class="info-page">
+
+            <div class="info-container">
+
+                <div class="info-title">
+
+                    <h1>Thông tin & Hỗ trợ</h1>
+
+                    <p>
+                        Tìm hiểu thêm về HelmetShop và các chính sách mua hàng
+                    </p>
+
+                </div>
+
+
+                <div class="info-layout">
+
+
+                    <!-- SIDEBAR -->
+
+                    <aside class="info-sidebar">
+
+                        <h3>Danh mục</h3>
+
+                        <a href="#gioi-thieu">
+                            Giới thiệu
+                        </a>
+
+                        <a href="#bao-hanh">
+                            Chính sách bảo hành
+                        </a>
+
+                        <a href="#doi-tra">
+                            Chính sách đổi trả
+                        </a>
+
+                        <a href="#giao-hang">
+                            Chính sách giao hàng
+                        </a>
+
+                        <a href="#huong-dan">
+                            Hướng dẫn mua hàng
+                        </a>
+
+                        <a href="#faq">
+                            Câu hỏi thường gặp
+                        </a>
+
+                        <a href="#lien-he">
+                            Liên hệ
+                        </a>
+
+                    </aside>
+
+
+                    <!-- CONTENT -->
+
+                    <div class="info-content">
+
+
+                        <!-- GIỚI THIỆU -->
+
+                        <section
+                            id="gioi-thieu"
+                            class="info-section"
+                        >
+
+                            <h2>Giới thiệu</h2>
+
+                            <p>
+                                HelmetShop là cửa hàng chuyên cung cấp
+                                các sản phẩm nón bảo hiểm và phụ kiện
+                                dành cho người sử dụng xe máy.
+                            </p>
+
+                            <p>
+                                Chúng tôi hướng đến việc cung cấp các sản phẩm
+                                có thiết kế đa dạng, phù hợp với nhu cầu sử dụng
+                                hằng ngày và phong cách của khách hàng.
+                            </p>
+
+                            <p>
+                                HelmetShop luôn cố gắng mang đến trải nghiệm
+                                mua sắm đơn giản, thuận tiện và dễ dàng.
+                            </p>
+
+                        </section>
+
+
+                        <!-- BẢO HÀNH -->
+
+                        <section
+                            id="bao-hanh"
+                            class="info-section"
+                        >
+
+                            <h2>Chính sách bảo hành</h2>
+
+                            <p>
+                                HelmetShop hỗ trợ bảo hành đối với các sản phẩm
+                                đáp ứng điều kiện bảo hành của cửa hàng.
+                            </p>
+
+                            <h3>Điều kiện bảo hành</h3>
+
+                            <ul>
+
+                                <li>
+                                    Sản phẩm còn trong thời gian bảo hành.
+                                </li>
+
+                                <li>
+                                    Sản phẩm có lỗi kỹ thuật từ nhà sản xuất.
+                                </li>
+
+                                <li>
+                                    Sản phẩm không bị hư hỏng do va đập,
+                                    sử dụng sai cách hoặc tự ý sửa chữa.
+                                </li>
+
+                            </ul>
+
+                            <h3>Thời gian xử lý</h3>
+
+                            <p>
+                                Sau khi tiếp nhận sản phẩm, HelmetShop sẽ
+                                kiểm tra tình trạng và thông báo cho khách hàng
+                                về phương án xử lý.
+                            </p>
+
+                        </section>
+
+
+                        <!-- ĐỔI TRẢ -->
+
+                        <section
+                            id="doi-tra"
+                            class="info-section"
+                        >
+
+                            <h2>Chính sách đổi trả</h2>
+
+                            <p>
+                                Khách hàng có thể liên hệ HelmetShop để yêu cầu
+                                đổi hoặc trả sản phẩm khi sản phẩm đáp ứng
+                                các điều kiện theo chính sách của cửa hàng.
+                            </p>
+
+                            <h3>Điều kiện đổi trả</h3>
+
+                            <ul>
+
+                                <li>
+                                    Sản phẩm còn nguyên vẹn.
+                                </li>
+
+                                <li>
+                                    Sản phẩm chưa qua sử dụng hoặc có dấu hiệu
+                                    sử dụng không đúng quy định.
+                                </li>
+
+                                <li>
+                                    Sản phẩm còn đầy đủ phụ kiện đi kèm
+                                    nếu có.
+                                </li>
+
+                                <li>
+                                    Khách hàng liên hệ cửa hàng trong thời gian
+                                    quy định.
+                                </li>
+
+                            </ul>
+
+                        </section>
+
+
+                        <!-- GIAO HÀNG -->
+
+                        <section
+                            id="giao-hang"
+                            class="info-section"
+                        >
+
+                            <h2>Chính sách giao hàng</h2>
+
+                            <p>
+                                HelmetShop hỗ trợ giao hàng đến địa chỉ khách
+                                hàng cung cấp khi đặt hàng.
+                            </p>
+
+                            <h3>Quy trình giao hàng</h3>
+
+                            <ul>
+
+                                <li>
+                                    Khách hàng gửi thông tin đặt hàng.
+                                </li>
+
+                                <li>
+                                    Nhân viên HelmetShop liên hệ để xác nhận
+                                    thông tin đơn hàng.
+                                </li>
+
+                                <li>
+                                    Đơn hàng được chuẩn bị và bàn giao
+                                    cho đơn vị vận chuyển.
+                                </li>
+
+                                <li>
+                                    Khách hàng nhận hàng theo địa chỉ
+                                    đã cung cấp.
+                                </li>
+
+                            </ul>
+
+                            <p>
+                                Thời gian giao hàng có thể thay đổi tùy thuộc
+                                vào khu vực nhận hàng và đơn vị vận chuyển.
+                            </p>
+
+                        </section>
+
+
+                        <!-- HƯỚNG DẪN MUA HÀNG -->
+
+                        <section
+                            id="huong-dan"
+                            class="info-section"
+                        >
+
+                            <h2>Hướng dẫn mua hàng</h2>
+
+                            <h3>Bước 1: Chọn sản phẩm</h3>
+
+                            <p>
+                                Truy cập trang sản phẩm và lựa chọn sản phẩm
+                                mà bạn muốn mua.
+                            </p>
+
+                            <h3>Bước 2: Thêm vào giỏ hàng</h3>
+
+                            <p>
+                                Nhấn nút thêm sản phẩm vào giỏ hàng.
+                                Bạn có thể kiểm tra lại số lượng và sản phẩm
+                                trong trang giỏ hàng.
+                            </p>
+
+                            <h3>Bước 3: Tiến hành đặt hàng</h3>
+
+                            <p>
+                                Nhập họ tên, số điện thoại và địa chỉ nhận hàng.
+                            </p>
+
+                            <h3>Bước 4: Xác nhận đơn hàng</h3>
+
+                            <p>
+                                Sau khi nhận được đơn hàng, nhân viên HelmetShop
+                                sẽ liên hệ với khách hàng để xác nhận thông tin,
+                                sản phẩm và giá trị đơn hàng.
+                            </p>
+
+                            <h3>Bước 5: Nhận hàng</h3>
+
+                            <p>
+                                Sau khi đơn hàng được xác nhận,
+                                HelmetShop tiến hành giao hàng đến địa chỉ
+                                khách hàng cung cấp.
+                            </p>
+
+                        </section>
+
+
+                        <!-- FAQ -->
+
+                        <section
+                            id="faq"
+                            class="info-section"
+                        >
+
+                            <h2>Câu hỏi thường gặp</h2>
+
+                            <h3>
+                                Tôi có cần đăng ký tài khoản để mua hàng không?
+                            </h3>
+
+                            <p>
+                                Không. Khách hàng có thể mua hàng và cung cấp
+                                thông tin nhận hàng trực tiếp khi thanh toán.
+                            </p>
+
+                            <h3>
+                                Sau khi đặt hàng có được xác nhận không?
+                            </h3>
+
+                            <p>
+                                Có. Nhân viên HelmetShop sẽ liên hệ để xác nhận
+                                thông tin đơn hàng trước khi xử lý giao hàng.
+                            </p>
+
+                            <h3>
+                                Tôi có thể thay đổi thông tin đơn hàng không?
+                            </h3>
+
+                            <p>
+                                Bạn nên liên hệ với HelmetShop càng sớm càng tốt
+                                nếu muốn thay đổi thông tin đơn hàng.
+                            </p>
+
+                            <h3>
+                                Tôi có thể liên hệ HelmetShop bằng cách nào?
+                            </h3>
+
+                            <p>
+                                Bạn có thể sử dụng thông tin liên hệ được cung
+                                cấp ở phần Liên hệ bên dưới.
+                            </p>
+
+                        </section>
+
+
+                        <!-- LIÊN HỆ -->
+
+                        <section
+                            id="lien-he"
+                            class="info-section"
+                        >
+
+                            <h2>Liên hệ</h2>
+
+                            <p>
+                                Nếu bạn cần hỗ trợ về sản phẩm hoặc đơn hàng,
+                                vui lòng liên hệ HelmetShop.
+                            </p>
+
+                            <div class="contact-box">
+
+                                <p>
+                                    📍 <strong>Địa chỉ:</strong>
+                                    TP. Hồ Chí Minh
+                                </p>
+
+                                <p>
+                                    📞 <strong>Điện thoại:</strong>
+                                    0123 456 789
+                                </p>
+
+                                <p>
+                                    ✉️ <strong>Email:</strong>
+                                    support@helmetshop.vn
+                                </p>
+
+                            </div>
+
+                        </section>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==============================
+         FOOTER
+    ============================== -->
+
+    <footer class="footer">
+
+        <div class="container footer-grid">
+
+
+            <div class="footer-about">
+
+                <a href="index.html" class="logo footer-logo">
+
+                    🪖 Helmet
+                    <span class="logo-highlight">Shop</span>
+
+                </a>
+
+                <p>
+                    HelmetShop cung cấp các sản phẩm
+                    nón bảo hiểm chất lượng cao,
+                    an toàn và thời trang.
+                </p>
+
+            </div>
+
+
+            <!-- THÔNG TIN -->
+
+            <div class="footer-column collapsible">
+
+                <h3 onclick="toggleFooter(this)">
+
+                    Thông tin
+
+                    <span class="footer-arrow">▼</span>
+
+                </h3>
+
+                <div class="footer-content">
+
+                    <a href="#gioi-thieu">
+                        Giới thiệu
+                    </a>
+
+                    <a href="#bao-hanh">
+                        Chính sách bảo hành
+                    </a>
+
+                    <a href="#doi-tra">
+                        Chính sách đổi trả
+                    </a>
+
+                    <a href="#giao-hang">
+                        Chính sách giao hàng
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- HỖ TRỢ -->
+
+            <div class="footer-column collapsible">
+
+                <h3 onclick="toggleFooter(this)">
+
+                    Hỗ trợ
+
+                    <span class="footer-arrow">▼</span>
+
+                </h3>
+
+                <div class="footer-content">
+
+                    <a href="#huong-dan">
+                        Hướng dẫn mua hàng
+                    </a>
+
+                    <a href="#faq">
+                        Câu hỏi thường gặp
+                    </a>
+
+                    <a href="#lien-he">
+                        Liên hệ
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIÊN HỆ -->
+
+            <div class="footer-column collapsible">
+
+                <h3 onclick="toggleFooter(this)">
+
+                    Liên hệ
+
+                    <span class="footer-arrow">▼</span>
+
+                </h3>
+
+                <div class="footer-content">
+
+                    <p>📍 TP. Hồ Chí Minh</p>
+
+                    <p>📞 0123 456 789</p>
+
+                    <p>✉️ support@helmetshop.vn</p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="copyright">
+
+            © 2026 HelmetShop. All rights reserved.
+
+        </div>
+
+    </footer>
+
+
+    <!-- ==============================
+         JAVASCRIPT
+    ============================== -->
+
+    <script>
+
+        const API_URL =
+            "https://helmetshop-api.onrender.com";
+
+
+        // Tìm kiếm sản phẩm
+        function searchProduct() {
+
+            const input =
+                document.getElementById("searchInput");
+
+            const keyword =
+                input.value.trim();
+
+            if (!keyword) {
+                return;
+            }
+
+            window.location.href =
+                "index.html?search=" +
+                encodeURIComponent(keyword);
+
+        }
+
+
+        // Cho phép Enter để tìm kiếm
+        document
+            .getElementById("searchInput")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+                    searchProduct();
+                }
+
+            });
+
+    </script>
+
+
+    <script src="js/script.js"></script>
+
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>
