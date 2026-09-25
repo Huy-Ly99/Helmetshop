@@ -695,7 +695,7 @@ app.post("/api/orders", async (req, res) => {
 
 
         // ========================================
-        // TÍNH TỔNG TIỀN
+        // KIỂM TRA STOCK + TÍNH TỔNG TIỀN
         // ========================================
 
         let totalAmount = 0;
@@ -703,7 +703,7 @@ app.post("/api/orders", async (req, res) => {
 
         for (const item of cartItemsResult.rows) {
 
-            if (item.quantity > item.stock) {
+            if (Number(item.quantity) > Number(item.stock)) {
 
                 await client.query("ROLLBACK");
 
@@ -810,6 +810,46 @@ app.post("/api/orders", async (req, res) => {
 
 
         // ========================================
+        // TRỪ TỒN KHO
+        // ========================================
+
+        for (const item of cartItemsResult.rows) {
+
+            const stockResult = await client.query(
+                `
+                UPDATE public.products
+                SET
+                    stock = stock - $1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE
+                    id = $2
+                    AND stock >= $1
+                RETURNING id, stock
+                `,
+                [
+                    item.quantity,
+                    item.product_id
+                ]
+            );
+
+
+            // Không update được stock
+            // => rollback toàn bộ đơn hàng
+            if (stockResult.rows.length === 0) {
+
+                await client.query("ROLLBACK");
+
+                return res.status(400).json({
+                    message:
+                        `Sản phẩm "${item.name}" không đủ số lượng trong kho.`
+                });
+
+            }
+
+        }
+
+
+        // ========================================
         // XÓA GIỎ HÀNG
         // ========================================
 
@@ -821,6 +861,10 @@ app.post("/api/orders", async (req, res) => {
             [cartId]
         );
 
+
+        // ========================================
+        // COMMIT
+        // ========================================
 
         await client.query("COMMIT");
 
@@ -867,7 +911,6 @@ app.post("/api/orders", async (req, res) => {
     }
 
 });
-
 
 // ========================================
 // MIDDLEWARE KIỂM TRA ADMIN JWT
