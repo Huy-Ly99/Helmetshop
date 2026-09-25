@@ -1859,6 +1859,7 @@ button {
 
 .search-box {
     position: relative;
+    z-index: 9999;
 }
 
 .search-suggestions {
