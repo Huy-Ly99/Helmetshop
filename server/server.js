@@ -1112,6 +1112,140 @@ app.patch(
     }
 );
 
+// ==========================================
+// ADMIN - XÁC NHẬN HÀNG ĐÃ VỀ KHO
+// ==========================================
+app.post("/api/admin/orders/:id/restore-stock", async (req, res) => {
+    const orderId = Number(req.params.id);
+
+    if (!Number.isInteger(orderId)) {
+        return res.status(400).json({
+            message: "Order ID không hợp lệ."
+        });
+    }
+
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        // 1. Lấy thông tin đơn hàng
+        const orderResult = await client.query(
+            `
+            SELECT
+                id,
+                contact_status,
+                stock_restored
+            FROM public.orders
+            WHERE id = $1
+            FOR UPDATE
+            `,
+            [orderId]
+        );
+
+        if (orderResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+
+            return res.status(404).json({
+                message: "Không tìm thấy đơn hàng."
+            });
+        }
+
+        const order = orderResult.rows[0];
+
+        // 2. Kiểm tra đơn có được phép hoàn kho không
+        if (
+            order.contact_status !== "CANCELLED" &&
+            order.contact_status !== "RETURN"
+        ) {
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message:
+                    "Đơn hàng chưa ở trạng thái Hủy hàng hoặc Trả hàng."
+            });
+        }
+
+        // 3. Kiểm tra đã hoàn kho trước đó chưa
+        if (order.stock_restored === true) {
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message: "Đơn hàng này đã được hoàn kho trước đó."
+            });
+        }
+
+        // 4. Lấy các sản phẩm trong đơn
+        const itemsResult = await client.query(
+            `
+            SELECT
+                product_id,
+                quantity
+            FROM public.order_items
+            WHERE order_id = $1
+            `,
+            [orderId]
+        );
+
+        if (itemsResult.rows.length === 0) {
+            await client.query("ROLLBACK");
+
+            return res.status(400).json({
+                message: "Đơn hàng không có sản phẩm."
+            });
+        }
+
+        // 5. Cộng lại stock
+        for (const item of itemsResult.rows) {
+            await client.query(
+                `
+                UPDATE public.products
+                SET
+                    stock = stock + $1,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = $2
+                `,
+                [item.quantity, item.product_id]
+            );
+        }
+
+        // 6. Đánh dấu đã hoàn kho
+        await client.query(
+            `
+            UPDATE public.orders
+            SET
+                stock_restored = TRUE,
+                contact_status = 'RETURNED'
+            WHERE id = $1
+            `,
+            [orderId]
+        );
+
+        // 7. Hoàn tất transaction
+        await client.query("COMMIT");
+
+        return res.json({
+            message: "Đã hoàn kho thành công.",
+            orderId: orderId
+        });
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+
+        console.error(
+            "Lỗi hoàn kho:",
+            error
+        );
+
+        return res.status(500).json({
+            message: "Lỗi server khi hoàn kho."
+        });
+
+    } finally {
+        client.release();
+    }
+});
+
 // =========================
 // TEST SERVER
 // =========================
