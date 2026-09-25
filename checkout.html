@@ -122,45 +122,227 @@
     </main>
 
 
-    <script>
+<script>
 
-        document
-            .getElementById("checkoutForm")
-            .addEventListener("submit", function(event) {
+    document
+        .getElementById("checkoutForm")
+        .addEventListener("submit", async function(event) {
 
-                event.preventDefault();
-
-
-                const customerName =
-                    document.getElementById("customerName").value.trim();
-
-                const phone =
-                    document.getElementById("phone").value.trim();
-
-                const address =
-                    document.getElementById("address").value.trim();
+            event.preventDefault();
 
 
-                if (!customerName || !phone || !address) {
+            const customerName =
+                document
+                    .getElementById("customerName")
+                    .value
+                    .trim();
 
-                    alert("Vui lòng nhập đầy đủ thông tin.");
 
-                    return;
+            const phone =
+                document
+                    .getElementById("phone")
+                    .value
+                    .trim();
+
+
+            const address =
+                document
+                    .getElementById("address")
+                    .value
+                    .trim();
+
+
+            // =========================
+            // KIỂM TRA THÔNG TIN
+            // =========================
+
+            if (!customerName || !phone || !address) {
+
+                alert(
+                    "Vui lòng nhập đầy đủ thông tin."
+                );
+
+                return;
+            }
+
+
+            // =========================
+            // LẤY CART TOKEN
+            // =========================
+
+            const cartToken =
+                localStorage.getItem(
+                    "helmetHopCartToken"
+                );
+
+
+            if (!cartToken) {
+
+                alert(
+                    "Giỏ hàng không tồn tại."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                // =========================
+                // GỬI ĐƠN HÀNG LÊN SERVER
+                // =========================
+
+                const response =
+                    await fetch(
+                        `${API_URL}/api/orders`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                customerName:
+                                    customerName,
+
+                                phone:
+                                    phone,
+
+                                address:
+                                    address,
+
+                                cartToken:
+                                    cartToken
+
+                            })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                // =========================
+                // ĐẶT HÀNG THẤT BẠI
+                // =========================
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        data.message ||
+                        "Đặt hàng thất bại."
+                    );
+
                 }
 
 
-                console.log("Khách hàng:", {
-                    customerName,
-                    phone,
-                    address
-                });
+                // =========================
+                // ĐẶT HÀNG THÀNH CÔNG
+                // =========================
+
+                console.log(
+                    "Đặt hàng thành công:",
+                    data
+                );
 
 
-                alert("Thông tin hợp lệ!");
+                // Hiện popup
+                showSuccessModal();
 
-            });
 
-    </script>
+                // Xóa cart token cũ
+                localStorage.removeItem(
+                    "helmetHopCartToken"
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Order error:",
+                    error
+                );
+
+
+                alert(
+                    error.message ||
+                    "Có lỗi xảy ra khi đặt hàng."
+                );
+
+            }
+
+        });
+
+
+    // =========================
+    // HIỆN POPUP THÀNH CÔNG
+    // =========================
+
+    function showSuccessModal() {
+
+        const modal =
+            document.getElementById(
+                "successModal"
+            );
+
+
+        if (modal) {
+
+            modal.classList.add("show");
+
+        }
+
+    }
+
+
+    // =========================
+    // VỀ TRANG CHỦ
+    // =========================
+
+    function goHomeAfterOrder() {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+</script>
+
+
+    
+
+<!-- POPUP ĐẶT HÀNG THÀNH CÔNG -->
+<div id="successModal" class="success-modal">
+
+    <div class="success-modal-content">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h2>Đặt hàng thành công!</h2>
+
+        <p>
+            Cảm ơn bạn đã mua hàng.
+        </p>
+
+        <p>
+            Nhân viên HelmetShop sẽ liên hệ với bạn
+            để xác nhận đơn hàng.
+        </p>
+
+        <button onclick="goHomeAfterOrder()">
+            VỀ TRANG CHỦ
+        </button>
+
+    </div>
+
+</div>
+
 
 </body>
 
