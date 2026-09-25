@@ -244,334 +244,361 @@
 
     <!-- JAVASCRIPT -->
 
-    ```html
+ ```html
 <script>
-    const API_URL = "https://helmetshop-api.onrender.com";
+
+const API_URL = "https://helmetshop-api.onrender.com";
 
 
-    // =========================
-    // LOAD SẢN PHẨM
-    // =========================
-    async function loadHelmetProducts() {
+// ======================================
+// TÌM KIẾM
+// ======================================
 
-        try {
+function searchProduct() {
 
-            const response =
-                await fetch(`${API_URL}/api/products`);
+    const input = document.getElementById("searchInput");
 
+    const keyword = input.value.trim();
 
-            if (!response.ok) {
-                throw new Error("Không thể lấy sản phẩm");
-            }
+    if (!keyword) {
+        return;
+    }
 
-
-            const products = await response.json();
-
-
-            const productGrid =
-                document.getElementById("productGrid");
+    // Chuyển sang chính trang nón bảo hiểm
+    window.location.href =
+        "non-bao-hiem.html?search=" +
+        encodeURIComponent(keyword);
+}
 
 
-            productGrid.innerHTML = "";
+// Nhấn Enter
+document
+    .getElementById("searchInput")
+    .addEventListener("keydown", function(event) {
+
+        if (event.key === "Enter") {
+            searchProduct();
+        }
+
+    });
 
 
-            // =====================================
-            // 1. LẤY TỪ KHÓA TỪ URL
-            // =====================================
+// ======================================
+// LOAD SẢN PHẨM
+// ======================================
 
-            const urlParams =
-                new URLSearchParams(window.location.search);
+async function loadHelmetProducts() {
 
-            const searchKeyword =
-                urlParams.get("search");
+    const productGrid =
+        document.getElementById("productGrid");
 
 
-            // =====================================
-            // 2. LỌC SẢN PHẨM NÓN BẢO HIỂM
-            // =====================================
+    try {
 
-            let helmetProducts =
-                products.filter(product => {
+        const response =
+            await fetch(`${API_URL}/api/products`);
+
+
+        if (!response.ok) {
+            throw new Error("API không phản hồi");
+        }
+
+
+        const data = await response.json();
+
+
+        console.log("DATA API:", data);
+
+
+        // API của bạn có thể trả về mảng trực tiếp
+        // hoặc { products: [...] }
+
+        const products =
+            Array.isArray(data)
+                ? data
+                : data.products || [];
+
+
+        console.log("TỔNG SẢN PHẨM:", products.length);
+
+
+        // ======================================
+        // LẤY KEYWORD TỪ URL
+        // ======================================
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+
+        const searchKeyword =
+            params.get("search");
+
+
+        console.log(
+            "KEYWORD:",
+            searchKeyword
+        );
+
+
+        // ======================================
+        // LỌC NÓN BẢO HIỂM
+        // ======================================
+
+        let result =
+            products.filter(product => {
+
+                const name =
+                    String(product.name || "")
+                        .toLowerCase();
+
+                const category =
+                    String(product.category || "")
+                        .toLowerCase();
+
+
+                return (
+                    name.includes("nón") ||
+                    category.includes("nón") ||
+                    name.includes("helmet") ||
+                    category.includes("helmet")
+                );
+
+            });
+
+
+        console.log(
+            "SẢN PHẨM NÓN:",
+            result
+        );
+
+
+        // ======================================
+        // LỌC THEO TỪ KHÓA
+        // ======================================
+
+        if (searchKeyword) {
+
+            const keyword =
+                searchKeyword
+                    .trim()
+                    .toLowerCase();
+
+
+            result =
+                result.filter(product => {
 
                     const name =
-                        product.name || "";
+                        String(product.name || "")
+                            .toLowerCase();
+
 
                     const category =
-                        product.category || "";
+                        String(product.category || "")
+                            .toLowerCase();
 
 
                     return (
-                        name
-                            .toLowerCase()
-                            .includes("nón")
-                        ||
-                        category
-                            .toLowerCase()
-                            .includes("nón")
+                        name.includes(keyword) ||
+                        category.includes(keyword)
                     );
 
                 });
 
 
-            // =====================================
-            // 3. NẾU CÓ TỪ KHÓA → LỌC TIẾP
-            // =====================================
-
-            if (searchKeyword) {
-
-                const keyword =
-                    searchKeyword
-                        .trim()
-                        .toLowerCase();
-
-
-                helmetProducts =
-                    helmetProducts.filter(product => {
-
-                        const name =
-                            (product.name || "")
-                                .toLowerCase();
-
-
-                        const category =
-                            (product.category || "")
-                                .toLowerCase();
-
-
-                        return (
-                            name.includes(keyword)
-                            ||
-                            category.includes(keyword)
-                        );
-
-                    });
-
-            }
-
-
-            // =====================================
-            // 4. KHÔNG TÌM THẤY
-            // =====================================
-
-            if (helmetProducts.length === 0) {
-
-                if (searchKeyword) {
-
-                    productGrid.innerHTML = `
-                        <div style="
-                            width: 100%;
-                            text-align: center;
-                            padding: 50px 20px;
-                        ">
-
-                            <h3>
-                                Không tìm thấy sản phẩm
-                            </h3>
-
-                            <p>
-                                Không có sản phẩm nón bảo hiểm
-                                phù hợp với từ khóa
-                                "<strong>${searchKeyword}</strong>"
-                            </p>
-
-                        </div>
-                    `;
-
-                } else {
-
-                    productGrid.innerHTML = `
-                        <div style="
-                            width: 100%;
-                            text-align: center;
-                            padding: 50px 20px;
-                        ">
-
-                            <h3>
-                                Không tìm thấy sản phẩm nón bảo hiểm.
-                            </h3>
-
-                        </div>
-                    `;
-
-                }
-
-                return;
-            }
-
-
-            // =====================================
-            // 5. HIỂN THỊ SẢN PHẨM
-            // =====================================
-
-            helmetProducts.forEach(product => {
-
-                let imageHTML = `
-                    <div class="helmet-placeholder">
-                        🪖
-                    </div>
-                `;
-
-
-                if (product.image) {
-
-                    const imageUrl =
-                        product.image.startsWith("http")
-                            ? product.image
-                            : `${API_URL}${product.image}`;
-
-
-                    imageHTML = `
-                        <img
-                            src="${imageUrl}"
-                            alt="${product.name}"
-                        >
-                    `;
-
-                }
-
-
-                const productCard = `
-
-                    <div
-                        class="product-card"
-                        onclick="viewProduct(${product.id})"
-                    >
-
-                        <div class="product-image">
-
-                            ${imageHTML}
-
-
-                            <button
-                                class="heart"
-                                onclick="event.stopPropagation()"
-                            >
-                                ♡
-                            </button>
-
-                        </div>
-
-
-                        <div class="product-info">
-
-                            <p class="product-category">
-                                ${product.category || ""}
-                            </p>
-
-
-                            <h3>
-                                ${product.name}
-                            </h3>
-
-
-                            <div class="rating">
-                                ⭐⭐⭐⭐⭐
-                            </div>
-
-
-                            <div class="product-bottom">
-
-                                <strong>
-                                    ${Number(product.price)
-                                        .toLocaleString("vi-VN")}đ
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-
-                productGrid.innerHTML += productCard;
-
-            });
+            console.log(
+                "KẾT QUẢ TÌM KIẾM:",
+                result
+            );
 
         }
 
 
-        catch (error) {
+        // ======================================
+        // KHÔNG CÓ KẾT QUẢ
+        // ======================================
 
-            console.error(error);
+        if (result.length === 0) {
 
-
-            document.getElementById(
-                "productGrid"
-            ).innerHTML = `
+            productGrid.innerHTML = `
 
                 <div style="
-                    width: 100%;
-                    text-align: center;
-                    padding: 50px 20px;
+                    width:100%;
+                    text-align:center;
+                    padding:60px 20px;
+                    grid-column:1/-1;
                 ">
 
+                    <h3>
+                        Không tìm thấy sản phẩm
+                    </h3>
+
                     <p>
-                        Không thể tải sản phẩm.
+                        Không có sản phẩm phù hợp với từ khóa
+                        "<strong>${searchKeyword || ""}</strong>"
                     </p>
 
                 </div>
 
             `;
 
-        }
-
-    }
-
-
-    // =====================================
-    // TÌM KIẾM SẢN PHẨM
-    // =====================================
-
-    function searchProduct() {
-
-        const input =
-            document.getElementById("searchInput");
-
-
-        const keyword =
-            input.value.trim();
-
-
-        // Không nhập gì
-        if (!keyword) {
             return;
         }
 
 
-        // Chuyển sang trang NÓN BẢO HIỂM
-        window.location.href =
-            "non-bao-hiem.html?search=" +
-            encodeURIComponent(keyword);
+        // ======================================
+        // HIỂN THỊ SẢN PHẨM
+        // ======================================
+
+        productGrid.innerHTML = "";
+
+
+        result.forEach(product => {
+
+
+            let imageHTML = `
+
+                <div class="helmet-placeholder">
+                    🪖
+                </div>
+
+            `;
+
+
+            if (product.image) {
+
+                const imageUrl =
+                    product.image.startsWith("http")
+                        ? product.image
+                        : `${API_URL}${product.image}`;
+
+
+                imageHTML = `
+
+                    <img
+                        src="${imageUrl}"
+                        alt="${product.name}"
+                    >
+
+                `;
+
+            }
+
+
+            const productCard = `
+
+                <div
+                    class="product-card"
+                    onclick="viewProduct(${product.id})"
+                >
+
+                    <div class="product-image">
+
+                        ${imageHTML}
+
+                        <button
+                            class="heart"
+                            onclick="event.stopPropagation()"
+                        >
+                            ♡
+                        </button>
+
+                    </div>
+
+
+                    <div class="product-info">
+
+                        <p class="product-category">
+                            ${product.category || ""}
+                        </p>
+
+
+                        <h3>
+                            ${product.name || ""}
+                        </h3>
+
+
+                        <div class="rating">
+                            ⭐⭐⭐⭐⭐
+                        </div>
+
+
+                        <div class="product-bottom">
+
+                            <strong>
+                                ${Number(product.price)
+                                    .toLocaleString("vi-VN")}đ
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            productGrid.innerHTML += productCard;
+
+        });
 
     }
 
 
-    // =====================================
-    // NHẤN ENTER ĐỂ TÌM KIẾM
-    // =====================================
+    catch (error) {
 
-    document
-        .getElementById("searchInput")
-        .addEventListener("keydown", function(event) {
-
-            if (event.key === "Enter") {
-
-                searchProduct();
-
-            }
-
-        });
+        console.error(
+            "LỖI LOAD PRODUCT:",
+            error
+        );
 
 
-    // =====================================
-    // CHẠY KHI MỞ TRANG
-    // =====================================
+        productGrid.innerHTML = `
 
-    loadHelmetProducts();
+            <div style="
+                width:100%;
+                text-align:center;
+                padding:60px 20px;
+                grid-column:1/-1;
+            ">
+
+                <h3>
+                    Không thể tải sản phẩm
+                </h3>
+
+                <p>
+                    Vui lòng thử lại sau.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ======================================
+// XEM CHI TIẾT
+// ======================================
+
+function viewProduct(productId) {
+
+    window.location.href =
+        `product-detail.html?id=${productId}`;
+
+}
+
+
+// ======================================
+// CHẠY KHI MỞ TRANG
+// ======================================
+
+loadHelmetProducts();
 
 </script>
+```
 
 
     <script src="js/script.js"></script>
