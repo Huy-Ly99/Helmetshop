@@ -347,20 +347,27 @@ autocomplete="off"
                         `;
 
 
-                        if (product.image) {
+                        
+if (product.image) {
 
-                            const imageUrl = product.image.startsWith("http")
-                                ? product.image
-                                : `${API_URL}${product.image}`;
+    const imageUrl =
+        product.image.startsWith("http")
+            ? product.image
+            : `${API_URL}${product.image}`;
 
-                            imageHTML = `
-                                <img
-                                    src="${imageUrl}"
-                                    alt="${product.name}"
-                                >
-                            `;
+    const outOfStock = Number(product.stock) === 0;
 
-                        }
+    imageHTML = `
+
+        <img
+            src="${imageUrl}"
+            alt="${product.name}"
+            ${outOfStock ? 'style="filter: grayscale(100%);"' : ''}
+        >
+
+    `;
+
+}
 
 
                         const productCard = `
