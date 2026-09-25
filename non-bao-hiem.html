@@ -250,37 +250,7 @@
 const API_URL = "https://helmetshop-api.onrender.com";
 
 
-// ======================================
-// TÌM KIẾM
-// ======================================
 
-function searchProduct() {
-
-    const input = document.getElementById("searchInput");
-
-    const keyword = input.value.trim();
-
-    if (!keyword) {
-        return;
-    }
-
-    // Chuyển sang chính trang nón bảo hiểm
-    window.location.href =
-        "non-bao-hiem.html?search=" +
-        encodeURIComponent(keyword);
-}
-
-
-// Nhấn Enter
-document
-    .getElementById("searchInput")
-    .addEventListener("keydown", function(event) {
-
-        if (event.key === "Enter") {
-            searchProduct();
-        }
-
-    });
 
 
 // ======================================

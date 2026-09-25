@@ -125,6 +125,7 @@ async function updateCartCount() {
 }
 
 
+
 // =========================
 // TÌM KIẾM
 // =========================
@@ -150,10 +151,11 @@ function searchProduct() {
         return;
     }
 
-    alert(
-        "Bạn đang tìm kiếm: " +
-        keyword
-    );
+    // Chuyển sang trang Nón bảo hiểm
+    // và truyền từ khóa tìm kiếm
+    window.location.href =
+        "non-bao-hiem.html?search=" +
+        encodeURIComponent(keyword);
 }
 
 
