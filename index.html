@@ -218,7 +218,34 @@
     </section>
 
 
+<!-- PRODUCTS -->
+<section class="section" id="products">
 
+    <div class="container">
+
+        <div class="section-title">
+
+            <p>SẢN PHẨM</p>
+
+            <h2 id="productTitle">
+                SẢN PHẨM MỚI NHẤT
+            </h2>
+
+        </div>
+
+
+        <div
+            class="product-grid"
+            id="productGrid"
+        >
+
+            <p>Đang tải sản phẩm...</p>
+
+        </div>
+
+    </div>
+
+</section>
     
 
 
@@ -301,10 +328,17 @@
 
     </footer>
 
-    <script>
+    ```html
+<script>
 
-    const API_URL = "https://helmetshop-api.onrender.com";
-    // Tìm kiếm sản phẩm
+    const API_URL =
+        "https://helmetshop-api.onrender.com";
+
+
+    // ==============================
+    // TÌM KIẾM SẢN PHẨM
+    // ==============================
+
     function searchProduct() {
 
         const input =
@@ -313,10 +347,16 @@
         const keyword =
             input.value.trim();
 
+
         if (!keyword) {
+
+            loadProducts();
+
             return;
         }
 
+
+        // Đưa keyword lên URL
         window.location.href =
             "index.html?search=" +
             encodeURIComponent(keyword);
@@ -324,18 +364,287 @@
     }
 
 
-    // Cho phép Enter để tìm kiếm
+    // Enter để tìm kiếm
     document
         .getElementById("searchInput")
-        .addEventListener("keydown", function(event) {
+        .addEventListener(
+            "keydown",
+            function(event) {
 
-            if (event.key === "Enter") {
-                searchProduct();
+                if (event.key === "Enter") {
+
+                    searchProduct();
+
+                }
+
+            }
+        );
+
+
+    // ==============================
+    // LOAD PRODUCTS
+    // ==============================
+
+    async function loadProducts() {
+
+        const productGrid =
+            document.getElementById("productGrid");
+
+        const productTitle =
+            document.getElementById("productTitle");
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/api/products`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Không thể lấy sản phẩm"
+                );
+
             }
 
-        });
+
+            const products =
+                await response.json();
 
 
+            // Lấy search từ URL
+            const params =
+                new URLSearchParams(
+                    window.location.search
+                );
+
+
+            const searchKeyword =
+                (
+                    params.get("search") || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            // ==============================
+            // FILTER
+            // ==============================
+
+            let filteredProducts =
+                products;
+
+
+            if (searchKeyword) {
+
+                filteredProducts =
+                    products.filter(product => {
+
+                        const name =
+                            (
+                                product.name || ""
+                            )
+                            .toLowerCase();
+
+
+                        const category =
+                            (
+                                product.category || ""
+                            )
+                            .toLowerCase();
+
+
+                        return (
+                            name.includes(searchKeyword) ||
+                            category.includes(searchKeyword)
+                        );
+
+                    });
+
+
+                productTitle.textContent =
+                    `KẾT QUẢ TÌM KIẾM: "${params.get("search")}"`;
+
+            }
+
+
+            // ==============================
+            // KHÔNG CÓ SẢN PHẨM
+            // ==============================
+
+            if (
+                filteredProducts.length === 0
+            ) {
+
+                productGrid.innerHTML = `
+
+                    <p style="
+                        grid-column: 1 / -1;
+                        text-align: center;
+                        padding: 40px;
+                    ">
+
+                        Không tìm thấy sản phẩm
+                        phù hợp với
+                        "<strong>${params.get("search")}</strong>".
+
+                    </p>
+
+                `;
+
+                return;
+            }
+
+
+            // ==============================
+            // HIỂN THỊ
+            // ==============================
+
+            productGrid.innerHTML = "";
+
+
+            filteredProducts.forEach(product => {
+
+
+                let imageHTML = `
+
+                    <div class="helmet-placeholder">
+                        🪖
+                    </div>
+
+                `;
+
+
+                if (product.image) {
+
+                    const imageUrl =
+                        product.image.startsWith("http")
+                            ? product.image
+                            : `${API_URL}${product.image}`;
+
+
+                    imageHTML = `
+
+                        <img
+                            src="${imageUrl}"
+                            alt="${product.name}"
+                        >
+
+                    `;
+
+                }
+
+
+                const productCard = `
+
+                    <div
+                        class="product-card"
+                        onclick="viewProduct(${product.id})"
+                    >
+
+                        <div class="product-image">
+
+                            ${imageHTML}
+
+                        </div>
+
+
+                        <div class="product-info">
+
+                            <p class="product-category">
+
+                                ${product.category || ""}
+
+                            </p>
+
+
+                            <h3>
+
+                                ${product.name}
+
+                            </h3>
+
+
+                            <div class="rating">
+
+                                ⭐⭐⭐⭐⭐
+
+                            </div>
+
+
+                            <div class="product-bottom">
+
+                                <strong>
+
+                                    ${Number(
+                                        product.price
+                                    ).toLocaleString("vi-VN")}đ
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+
+                productGrid.innerHTML +=
+                    productCard;
+
+            });
+
+        }
+
+
+        catch (error) {
+
+            console.error(
+                "Load products error:",
+                error
+            );
+
+
+            productGrid.innerHTML = `
+
+                <p style="
+                    grid-column: 1 / -1;
+                    text-align: center;
+                ">
+
+                    Không thể tải sản phẩm.
+
+                </p>
+
+            `;
+
+        }
+
+    }
+
+
+    // ==============================
+    // VIEW PRODUCT
+    // ==============================
+
+    function viewProduct(productId) {
+
+        window.location.href =
+            `product-detail.html?id=${productId}`;
+
+    }
+
+
+    // ==============================
+    // LOAD WHEN PAGE STARTS
+    // ==============================
+
+    loadProducts();
 
 </script>
 
