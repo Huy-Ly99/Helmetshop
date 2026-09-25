@@ -1952,3 +1952,8 @@ z-index: 9999;
     font-weight: bold;
     white-space: nowrap;
 }
+
+.detail-add-cart.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -367,16 +367,59 @@ autocomplete="off"
             document.getElementById("productStock")
                 .textContent =
                 `Còn ${product.stock} sản phẩm`;
+            
+const stockElement =
+    document.getElementById("productStock");
 
+if (Number(product.stock) === 0) {
+
+    stockElement.textContent = "ĐÃ HẾT HÀNG";
+    stockElement.classList.add("out-of-stock");
+
+} else {
+
+    stockElement.textContent =
+        `Còn ${product.stock} sản phẩm`;
+
+    stockElement.classList.remove("out-of-stock");
+
+}
+
+
+const addCartButton =
+    document.querySelector(".detail-add-cart");
+
+if (Number(product.stock) === 0) {
+
+    addCartButton.textContent = "ĐÃ HẾT HÀNG";
+    addCartButton.disabled = true;
+    addCartButton.classList.add("disabled");
+
+} else {
+
+    addCartButton.textContent = "THÊM VÀO GIỎ";
+    addCartButton.disabled = false;
+    addCartButton.classList.remove("disabled");
+
+}
 
             const image =
                 document.getElementById("productImage");
 
-            if (product.image) {
+            
+if (product.image) {
 
-                image.src = product.image;
+    image.src = product.image;
 
-            } else {
+    // Hết hàng → ảnh chuyển trắng đen
+    if (Number(product.stock) === 0) {
+        image.style.filter = "grayscale(100%)";
+    } else {
+        image.style.filter = "none";
+    }
+
+} else {
+
 
                 image.style.display = "none";
 
@@ -479,6 +522,13 @@ async function addProductToCart() {
         alert("Chưa tải được thông tin sản phẩm.");
         return;
     }
+    
+if (Number(product.stock) === 0) {
+
+    alert("Sản phẩm đã hết hàng.");
+
+    return;
+}
 
     try {
 
