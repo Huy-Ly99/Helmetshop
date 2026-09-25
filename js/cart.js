@@ -881,37 +881,30 @@ async function submitOrder() {
 
 
         // =========================
-        // ĐẶT HÀNG THÀNH CÔNG
-        // =========================
+// ĐẶT HÀNG THÀNH CÔNG
+// =========================
 
-        alert(
-            `Đặt hàng thành công!\n\nMã đơn hàng: #${data.order.id}`
-        );
+const successModal =
+    document.getElementById("successModal");
 
+const successOrderId =
+    document.getElementById("successOrderId");
 
-        // =========================
-        // ĐÓNG MODAL
-        // =========================
+if (successOrderId) {
+    successOrderId.textContent =
+        `Mã đơn hàng: #${data.order.id}`;
+}
 
-        closeCheckoutModal();
+closeCheckoutModal();
 
+if (successModal) {
+    successModal.classList.add("show");
+}
 
-        // =========================
-        // XÓA CART TOKEN
-        // =========================
-
-        localStorage.removeItem(
-            "helmetHopCartToken"
-        );
-
-
-        // =========================
-        // VỀ TRANG CHỦ
-        // =========================
-
-        window.location.href =
-            "index.html";
-
+// Xóa cart token
+localStorage.removeItem(
+    "helmetHopCartToken"
+);
 
     } catch (error) {
 
@@ -925,5 +918,12 @@ async function submitOrder() {
         );
 
     }
+
+}
+
+function goHomeAfterOrder() {
+
+    window.location.href =
+        "index.html";
 
 }

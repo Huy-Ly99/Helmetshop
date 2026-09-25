@@ -1089,3 +1089,140 @@ body {
         font-size: 14px;
     }
 }
+
+/* ========================================
+   SUCCESS MODAL
+======================================== */
+
+.success-modal {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    z-index: 99999;
+
+    padding: 20px;
+}
+
+.success-modal.show {
+    display: flex;
+}
+
+.success-modal-content {
+    width: 100%;
+    max-width: 400px;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    padding: 30px 24px;
+
+    text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+    animation: successPopup 0.25s ease;
+}
+
+.success-icon {
+    width: 65px;
+    height: 65px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 50%;
+
+    background: #28a745;
+
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.success-modal-content h2 {
+    margin: 10px 0;
+
+    font-size: 24px;
+}
+
+.success-modal-content p {
+    margin: 8px 0;
+
+    color: #666;
+
+    line-height: 1.5;
+}
+
+#successOrderId {
+    color: #111;
+
+    font-weight: bold;
+}
+
+.success-modal-content button {
+    width: 100%;
+
+    margin-top: 20px;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+@keyframes successPopup {
+
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .success-modal {
+        padding: 16px;
+    }
+
+    .success-modal-content {
+        padding: 25px 20px;
+    }
+
+    .success-modal-content h2 {
+        font-size: 21px;
+    }
+
+    .success-modal-content p {
+        font-size: 14px;
+    }
+
+}
